@@ -18,3 +18,18 @@ enum class MuscleGroup() {
     ABS,
     FOREARMS
 }
+
+fun MuscleGroup.toReadableString(): String {
+    return when (this) {
+        MuscleGroup.CHEST -> "Peito"
+        MuscleGroup.BACK -> "Costas"
+        MuscleGroup.QUADS -> "Quadríceps"
+        MuscleGroup.HAMSTRINGS -> "Posterior de Coxa"
+        MuscleGroup.BICEPS -> "Bíceps"
+        MuscleGroup.TRICEPS -> "Tríceps"
+        MuscleGroup.SHOULDERS -> "Ombro"
+        MuscleGroup.CALVES -> "Panturrilha"
+        MuscleGroup.ABS -> "Abdominal"
+        MuscleGroup.FOREARMS -> "Antebraço"
+    }
+}
