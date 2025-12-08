@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.daniloscataloni.liftking.ui.ExerciseCreationDialog
 
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun ExerciseCreationDialogPreview() {
     ExerciseCreationDialog(

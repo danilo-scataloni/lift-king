@@ -7,16 +7,29 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ExerciseCreationViewModel() : ViewModel() {
 
-    private val _selectedMuscleGroup = MutableStateFlow<MuscleGroup?>(null)
-    val selectedMuscleGroup: StateFlow<MuscleGroup?> = _selectedMuscleGroup
+    private val _primaryMuscleGroup = MutableStateFlow<MuscleGroup?>(null)
+    val primaryMuscleGroup: StateFlow<MuscleGroup?> = _primaryMuscleGroup
 
-    fun onMuscleGroupClick(muscleGroup: MuscleGroup) {
-        val actualMuscleGroup = _selectedMuscleGroup.value
-        if (muscleGroup == actualMuscleGroup) {
-            _selectedMuscleGroup.value = null
-        } else {
-            _selectedMuscleGroup.value = muscleGroup
-        }
+    private val _secondaryMuscleGroup = MutableStateFlow<MuscleGroup?>(null)
+    val secondaryMuscleGroup: StateFlow<MuscleGroup?> = _secondaryMuscleGroup
+
+    private val _exerciseName = MutableStateFlow("")
+    val exerciseName: StateFlow<String> = _exerciseName
+
+    fun onMuscleGroup1Selected(muscleGroup: MuscleGroup) {
+        _primaryMuscleGroup.value = muscleGroup
+    }
+
+    fun onMuscleGroup2Selected(muscleGroup: MuscleGroup) {
+        _secondaryMuscleGroup.value = muscleGroup
+    }
+
+    fun onExerciseNameChange(newName: String) {
+        _exerciseName.value = newName
+    }
+
+    fun onSaveExercise() {
+        // Logic to save the exercise can be implemented here
     }
 
 }
