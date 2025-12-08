@@ -7,25 +7,19 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ExerciseCreationViewModel() : ViewModel() {
 
-    private val _primaryMuscleGroup = MutableStateFlow<MuscleGroup?>(null)
-    val primaryMuscleGroup: StateFlow<MuscleGroup?> = _primaryMuscleGroup
+    private val _uiState = MutableStateFlow(ExerciseCreationState())
+    val uiState: StateFlow<ExerciseCreationState> = _uiState
 
-    private val _secondaryMuscleGroup = MutableStateFlow<MuscleGroup?>(null)
-    val secondaryMuscleGroup: StateFlow<MuscleGroup?> = _secondaryMuscleGroup
-
-    private val _exerciseName = MutableStateFlow("")
-    val exerciseName: StateFlow<String> = _exerciseName
-
-    fun onMuscleGroup1Selected(muscleGroup: MuscleGroup) {
-        _primaryMuscleGroup.value = muscleGroup
+    fun onPrimaryMuscleSelected(muscleGroup: MuscleGroup) {
+        _uiState.value = _uiState.value.copy(primaryMuscleGroup = muscleGroup)
     }
 
-    fun onMuscleGroup2Selected(muscleGroup: MuscleGroup) {
-        _secondaryMuscleGroup.value = muscleGroup
+    fun onSecondaryMuscleSelected(muscleGroup: MuscleGroup) {
+        _uiState.value = _uiState.value.copy(secondaryMuscleGroup = muscleGroup)
     }
 
     fun onExerciseNameChange(newName: String) {
-        _exerciseName.value = newName
+        _uiState.value = _uiState.value.copy(exerciseName = newName)
     }
 
     fun onSaveExercise() {
@@ -33,3 +27,9 @@ class ExerciseCreationViewModel() : ViewModel() {
     }
 
 }
+
+data class ExerciseCreationState(
+    val primaryMuscleGroup: MuscleGroup? = null,
+    val secondaryMuscleGroup: MuscleGroup? = null,
+    val exerciseName: String? = null
+)

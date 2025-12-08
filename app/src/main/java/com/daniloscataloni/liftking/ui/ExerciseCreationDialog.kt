@@ -40,9 +40,8 @@ fun ExerciseCreationDialog(
     modifier: Modifier = Modifier,
     viewModel: ExerciseCreationViewModel = viewModel()
 ) {
-    val primaryMuscleGroup by viewModel.primaryMuscleGroup.collectAsState()
-    val secondaryMuscleGroup by viewModel.secondaryMuscleGroup.collectAsState()
-    val exerciseName by viewModel.exerciseName.collectAsState()
+
+    val uiState by viewModel.uiState.collectAsState()
 
     BasicAlertDialog(
         onDismissRequest = {},
@@ -82,7 +81,7 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TextField(
-                    value = exerciseName,
+                    value = uiState.exerciseName ?: "",
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -111,8 +110,8 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 MuscleGroupSelector(
-                    selectedMuscleGroup = primaryMuscleGroup,
-                    onMuscleGroupSelected = { viewModel.onMuscleGroup1Selected(it) },
+                    selectedMuscleGroup = uiState.primaryMuscleGroup,
+                    onMuscleGroupSelected = { viewModel.onPrimaryMuscleSelected(it) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -127,8 +126,8 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 MuscleGroupSelector(
-                    selectedMuscleGroup = secondaryMuscleGroup,
-                    onMuscleGroupSelected = { viewModel.onMuscleGroup2Selected(it) },
+                    selectedMuscleGroup = uiState.secondaryMuscleGroup,
+                    onMuscleGroupSelected = { viewModel.onSecondaryMuscleSelected(it) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
