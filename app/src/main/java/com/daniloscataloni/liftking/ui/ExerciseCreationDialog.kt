@@ -1,5 +1,6 @@
 package com.daniloscataloni.liftking.ui
 
+import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daniloscataloni.liftking.ui.components.MuscleGroupSelector
 import com.daniloscataloni.liftking.ui.utils.ButtonBackgroundGray
 import com.daniloscataloni.liftking.ui.utils.BorderGray
@@ -38,7 +38,7 @@ import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
 @Composable
 fun ExerciseCreationDialog(
     modifier: Modifier = Modifier,
-    viewModel: ExerciseCreationViewModel = viewModel()
+    viewModel: ExerciseCreationViewModel = koinViewModel()
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -111,8 +111,7 @@ fun ExerciseCreationDialog(
 
                 MuscleGroupSelector(
                     selectedMuscleGroup = uiState.primaryMuscleGroup,
-                    onMuscleGroupSelected = { viewModel.onPrimaryMuscleSelected(it) },
-                    modifier = Modifier.fillMaxWidth()
+                    onMuscleGroupSelected = { viewModel.onPrimaryMuscleSelected(it) }
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -127,8 +126,7 @@ fun ExerciseCreationDialog(
 
                 MuscleGroupSelector(
                     selectedMuscleGroup = uiState.secondaryMuscleGroup,
-                    onMuscleGroupSelected = { viewModel.onSecondaryMuscleSelected(it) },
-                    modifier = Modifier.fillMaxWidth()
+                    onMuscleGroupSelected = { viewModel.onSecondaryMuscleSelected(it) }
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -172,7 +170,7 @@ fun ExerciseCreationDialog(
                             width = 1.dp,
                             color = BorderGray
                         ),
-                        onClick = {viewModel.onSaveExercise()}
+                        onClick = { viewModel.onSaveExercise() }
                     ) {
                         Text(
                             text = "Adicionar"

@@ -26,8 +26,7 @@ import com.daniloscataloni.liftking.ui.utils.SmoothBorderGrey
 @Composable
 fun MuscleGroupSelector(
     selectedMuscleGroup: MuscleGroup?,
-    onMuscleGroupSelected: (MuscleGroup) -> Unit,
-    modifier: Modifier
+    onMuscleGroupSelected: (MuscleGroup) -> Unit
 ) {
     var isMuscleGroupMenuOpen by remember { mutableStateOf(false) }
 
