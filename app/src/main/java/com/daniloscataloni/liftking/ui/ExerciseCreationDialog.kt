@@ -81,7 +81,7 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TextField(
-                    value = uiState.exerciseName ?: "",
+                    value = uiState.exercise.description ?: "",
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -110,7 +110,7 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 MuscleGroupSelector(
-                    selectedMuscleGroup = uiState.primaryMuscleGroup,
+                    selectedMuscleGroup = uiState.exercise.primaryMuscleGroup,
                     onMuscleGroupSelected = { viewModel.onPrimaryMuscleSelected(it) }
                 )
 
@@ -125,7 +125,7 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 MuscleGroupSelector(
-                    selectedMuscleGroup = uiState.secondaryMuscleGroup,
+                    selectedMuscleGroup = uiState.exercise.secondaryMuscleGroups,
                     onMuscleGroupSelected = { viewModel.onSecondaryMuscleSelected(it) }
                 )
 
