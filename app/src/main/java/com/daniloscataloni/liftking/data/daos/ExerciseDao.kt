@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.daniloscataloni.liftking.data.entities.ExerciseEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExerciseDao {
@@ -13,7 +14,7 @@ interface ExerciseDao {
     suspend fun insertExercise(exercise: ExerciseEntity)
 
     @Query("SELECT * FROM exercises")
-    suspend fun getAllExercises(): List<ExerciseEntity>
+    fun getAllExercises(): Flow<List<ExerciseEntity>>
 
     @Query("SELECT * FROM exercises WHERE id = :exerciseId")
     suspend fun getExerciseById(exerciseId: Int): ExerciseEntity?
