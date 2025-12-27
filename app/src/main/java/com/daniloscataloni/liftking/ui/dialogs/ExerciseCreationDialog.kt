@@ -1,4 +1,4 @@
-package com.daniloscataloni.liftking.ui
+package com.daniloscataloni.liftking.ui.dialogs
 
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.BorderStroke
@@ -37,7 +37,6 @@ import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseCreationDialog(
-    modifier: Modifier = Modifier,
     viewModel: ExerciseCreationViewModel = koinViewModel()
 ) {
 
@@ -45,7 +44,7 @@ fun ExerciseCreationDialog(
 
     BasicAlertDialog(
         onDismissRequest = {},
-        modifier = modifier,
+        modifier = Modifier,
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
@@ -81,7 +80,7 @@ fun ExerciseCreationDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TextField(
-                    value = uiState.exercise.description ?: "",
+                    value = uiState.exercise.description,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
