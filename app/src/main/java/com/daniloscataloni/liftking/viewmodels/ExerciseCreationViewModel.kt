@@ -49,6 +49,8 @@ class ExerciseCreationViewModel(
         viewModelScope.launch {
             repository.insertExercise(currentExercise)
         }
+
+        _uiState.value = ExerciseCreationState()
     }
 
 }

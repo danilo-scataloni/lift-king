@@ -65,7 +65,7 @@ fun ExerciseCard(
                     contentDescription = null
                 )
             }
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = exercise.description,
                     color = Color.White,
@@ -94,10 +94,8 @@ fun ExerciseCard(
 
             }
 
-            Spacer(modifier = Modifier.width(140.dp))
-
             Icon(
-                modifier = Modifier.height(20.dp),
+                modifier = Modifier.height(20.dp).padding(end = 20.dp),
                 imageVector = Icons.Default.ArrowForward,
                 tint = SmoothGray,
                 contentDescription = null

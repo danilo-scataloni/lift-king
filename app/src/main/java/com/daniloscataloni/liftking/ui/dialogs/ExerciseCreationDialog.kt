@@ -37,7 +37,9 @@ import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseCreationDialog(
-    viewModel: ExerciseCreationViewModel = koinViewModel()
+    viewModel: ExerciseCreationViewModel = koinViewModel(),
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -146,7 +148,7 @@ fun ExerciseCreationDialog(
                             disabledContainerColor = ButtonBackgroundGray,
                             disabledContentColor = Color.White
                         ),
-                        onClick = {}
+                        onClick = { onDismiss }
                     ) {
                         Text(
                             text = "Cancelar",
@@ -169,7 +171,10 @@ fun ExerciseCreationDialog(
                             width = 1.dp,
                             color = BorderGray
                         ),
-                        onClick = { viewModel.onSaveExercise() }
+                        onClick = {
+                            viewModel.onSaveExercise()
+                            onConfirm()
+                        }
                     ) {
                         Text(
                             text = "Adicionar"
