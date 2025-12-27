@@ -57,7 +57,7 @@ fun ExerciseListScreen(
 
         if (showDialog.value){
             ExerciseCreationDialog(
-                onDismiss = { viewModel.onDismissDialog()},
+                onDismiss = { viewModel.onDismissDialog() },
                 onConfirm = { viewModel.onDismissDialog() }
             )
         }

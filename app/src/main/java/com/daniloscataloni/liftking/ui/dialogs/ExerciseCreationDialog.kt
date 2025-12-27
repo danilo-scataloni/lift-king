@@ -148,7 +148,7 @@ fun ExerciseCreationDialog(
                             disabledContainerColor = ButtonBackgroundGray,
                             disabledContentColor = Color.White
                         ),
-                        onClick = { onDismiss }
+                        onClick = { onDismiss() }
                     ) {
                         Text(
                             text = "Cancelar",
