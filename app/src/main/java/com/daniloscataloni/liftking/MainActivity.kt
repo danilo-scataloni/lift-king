@@ -3,18 +3,23 @@ package com.daniloscataloni.liftking
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.daniloscataloni.liftking.ui.ExerciseCreationDialog
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.daniloscataloni.liftking.ui.dialogs.ExerciseCreationDialog
+import com.daniloscataloni.liftking.ui.screens.ExerciseListScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            ExerciseCreationDialog()
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "exercise_list") {
+                composable("exercise_list") {
+                    ExerciseListScreen()
+                }
+            }
         }
     }
 }

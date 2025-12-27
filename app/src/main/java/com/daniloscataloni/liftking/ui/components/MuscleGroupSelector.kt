@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.daniloscataloni.liftking.entities.MuscleGroup
 import com.daniloscataloni.liftking.entities.toReadableString
 import com.daniloscataloni.liftking.ui.utils.BackgroundGray
-import com.daniloscataloni.liftking.ui.utils.SmoothBorderGrey
+import com.daniloscataloni.liftking.ui.utils.SmoothGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,9 +48,9 @@ fun MuscleGroupSelector(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedBorderColor = Color.White,
-                unfocusedBorderColor = SmoothBorderGrey,
+                unfocusedBorderColor = SmoothGray,
                 focusedLabelColor = Color.White,
-                unfocusedLabelColor = SmoothBorderGrey
+                unfocusedLabelColor = SmoothGray
             ),
             modifier = Modifier
                 .menuAnchor()
