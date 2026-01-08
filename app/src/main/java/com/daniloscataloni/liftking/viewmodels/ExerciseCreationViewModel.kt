@@ -17,6 +17,10 @@ class ExerciseCreationViewModel(
     val uiState: StateFlow<ExerciseCreationState> = _uiState
 
     fun onPrimaryMuscleSelected(muscleGroup: MuscleGroup) {
+        if (muscleGroup == _uiState.value.exercise.secondaryMuscleGroups) {
+            // Prevent selecting the same muscle group for both primary and secondary
+            return
+        }
         _uiState.value = _uiState.value.copy(
             exercise = _uiState.value.exercise.copy(
                 primaryMuscleGroup = muscleGroup
@@ -25,6 +29,19 @@ class ExerciseCreationViewModel(
     }
 
     fun onSecondaryMuscleSelected(muscleGroup: MuscleGroup) {
+
+        if (muscleGroup == _uiState.value.exercise.secondaryMuscleGroups) {
+            _uiState.value = _uiState.value.copy(
+                exercise = _uiState.value.exercise.copy(
+                    secondaryMuscleGroups = null
+                )
+            )
+            return
+        }
+        if (muscleGroup == _uiState.value.exercise.primaryMuscleGroup) {
+            return
+        }
+
         _uiState.value = _uiState.value.copy(
             exercise = _uiState.value.exercise.copy(
                 secondaryMuscleGroups = muscleGroup
