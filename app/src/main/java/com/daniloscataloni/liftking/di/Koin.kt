@@ -4,8 +4,8 @@ import androidx.room.Room
 import com.daniloscataloni.liftking.data.LiftKingDatabase
 import com.daniloscataloni.liftking.repositories.ExerciseRepository
 import com.daniloscataloni.liftking.repositories.IExerciseRepository
-import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
-import com.daniloscataloni.liftking.viewmodels.ExerciseListViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind

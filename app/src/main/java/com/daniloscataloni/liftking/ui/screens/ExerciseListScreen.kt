@@ -26,7 +26,7 @@ import com.daniloscataloni.liftking.ui.dialogs.ExerciseCreationDialog
 import com.daniloscataloni.liftking.ui.utils.ButtonBackgroundGray
 import com.daniloscataloni.liftking.ui.utils.DeepBlack
 import com.daniloscataloni.liftking.ui.utils.Inter
-import com.daniloscataloni.liftking.viewmodels.ExerciseListViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

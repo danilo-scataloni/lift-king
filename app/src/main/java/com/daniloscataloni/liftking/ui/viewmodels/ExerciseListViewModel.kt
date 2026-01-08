@@ -1,4 +1,4 @@
-package com.daniloscataloni.liftking.viewmodels
+package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.daniloscataloni.liftking.entities.Exercise

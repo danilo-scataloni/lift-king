@@ -28,7 +28,7 @@ import com.daniloscataloni.liftking.ui.components.LiftKingButton
 import com.daniloscataloni.liftking.ui.components.MuscleGroupSelector
 import com.daniloscataloni.liftking.ui.utils.BackgroundGray
 import com.daniloscataloni.liftking.ui.utils.Inter
-import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
