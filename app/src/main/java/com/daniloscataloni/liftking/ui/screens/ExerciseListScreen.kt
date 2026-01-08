@@ -45,7 +45,7 @@ fun ExerciseListScreen(
             .fillMaxSize(),
         topBar = {
             Text(
-                modifier = Modifier.padding(top = 24.dp, start = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(top = 48.dp, start = 16.dp, bottom = 16.dp),
                 text = "Exercícios",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
@@ -55,7 +55,7 @@ fun ExerciseListScreen(
         }
     ) { paddingValues ->
 
-        if (showDialog.value){
+        if (showDialog.value) {
             ExerciseCreationDialog(
                 onDismiss = { viewModel.onDismissDialog() },
                 onConfirm = { viewModel.onDismissDialog() }

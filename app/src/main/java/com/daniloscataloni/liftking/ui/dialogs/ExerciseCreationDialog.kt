@@ -1,7 +1,5 @@
 package com.daniloscataloni.liftking.ui.dialogs
 
-import org.koin.androidx.compose.koinViewModel
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -24,15 +20,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.daniloscataloni.liftking.ui.components.LiftKingButton
 import com.daniloscataloni.liftking.ui.components.MuscleGroupSelector
-import com.daniloscataloni.liftking.ui.utils.ButtonBackgroundGray
-import com.daniloscataloni.liftking.ui.utils.BorderGray
 import com.daniloscataloni.liftking.ui.utils.BackgroundGray
+import com.daniloscataloni.liftking.ui.utils.Inter
 import com.daniloscataloni.liftking.viewmodels.ExerciseCreationViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +43,7 @@ fun ExerciseCreationDialog(
 
     BasicAlertDialog(
         onDismissRequest = {},
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         properties = DialogProperties(
             dismissOnClickOutside = true,
             dismissOnBackPress = true,
@@ -68,7 +65,7 @@ fun ExerciseCreationDialog(
                 Text(
                     text = "Adicionar exercício",
                     fontSize = 24.sp,
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = Inter,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -76,7 +73,7 @@ fun ExerciseCreationDialog(
                 Text(
                     text = "Nome do exercício",
                     fontSize = 14.sp,
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = Inter,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -96,8 +93,12 @@ fun ExerciseCreationDialog(
                         .height(50.dp),
                     singleLine = true,
                     enabled = true,
-                    placeholder = { Text("Digite o nome do exercício") },
-                    shape = RoundedCornerShape(8.dp)
+                    placeholder = { Text(text = "Digite o nome do exercício", fontFamily = Inter) },
+                    shape = RoundedCornerShape(8.dp),
+                    textStyle = TextStyle(
+                        fontFamily = Inter,
+                        color = Color.White
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -105,7 +106,7 @@ fun ExerciseCreationDialog(
                 Text(
                     text = "Grupo muscular principal",
                     fontSize = 14.sp,
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = Inter,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -120,7 +121,7 @@ fun ExerciseCreationDialog(
                 Text(
                     text = "Grupo muscular auxiliar",
                     fontSize = 14.sp,
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = Inter,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -138,48 +139,25 @@ fun ExerciseCreationDialog(
                         .fillMaxHeight(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Button(
+                    LiftKingButton(
                         modifier = Modifier
                             .weight(1f)
                             .padding(8.dp),
-                        colors = ButtonColors(
-                            containerColor = ButtonBackgroundGray,
-                            contentColor = Color.White,
-                            disabledContainerColor = ButtonBackgroundGray,
-                            disabledContentColor = Color.White
-                        ),
-                        onClick = { onDismiss() }
-                    ) {
-                        Text(
-                            text = "Cancelar",
-                            color = Color.White,
-                            fontFamily = FontFamily.SansSerif
-                        )
-                    }
-                    Button(
+                        isLight = false,
+                        onClick = { onDismiss() },
+                        text = "Cancelar"
+                    )
+                    LiftKingButton(
                         modifier = Modifier
                             .weight(1f)
                             .padding(8.dp),
-                        colors = ButtonColors(
-                            containerColor = Color.White,
-                            contentColor = ButtonBackgroundGray,
-                            disabledContainerColor = Color.White,
-                            disabledContentColor = ButtonBackgroundGray,
-
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = BorderGray
-                        ),
+                        isLight = true,
                         onClick = {
                             viewModel.onSaveExercise()
                             onConfirm()
-                        }
-                    ) {
-                        Text(
-                            text = "Adicionar"
-                        )
-                    }
+                        },
+                        text = "Adicionar"
+                    )
                 }
             }
         }

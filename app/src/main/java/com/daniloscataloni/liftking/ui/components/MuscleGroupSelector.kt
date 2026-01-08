@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.daniloscataloni.liftking.entities.MuscleGroup
 import com.daniloscataloni.liftking.entities.toReadableString
 import com.daniloscataloni.liftking.ui.utils.BackgroundGray
+import com.daniloscataloni.liftking.ui.utils.Inter
 import com.daniloscataloni.liftking.ui.utils.SmoothGray
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,15 +59,11 @@ fun MuscleGroupSelector(
         )
         ExposedDropdownMenu(
             expanded = isMuscleGroupMenuOpen,
-            onDismissRequest = { isMuscleGroupMenuOpen = false },
-            border = BorderStroke(
-                width = 0.dp,
-                color = BackgroundGray
-            )
+            onDismissRequest = { isMuscleGroupMenuOpen = false }
         ) {
             MuscleGroup.entries.forEach { muscleGroup ->
                 DropdownMenuItem(
-                    text = { Text(muscleGroup.toReadableString()) },
+                    text = { Text(muscleGroup.toReadableString(), fontFamily = Inter) },
                     onClick = {
                         onMuscleGroupSelected(muscleGroup)
                         isMuscleGroupMenuOpen = false
