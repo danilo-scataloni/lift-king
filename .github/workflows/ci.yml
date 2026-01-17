@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Upload lint reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: lint-reports
@@ -70,7 +70,7 @@ jobs:
         run: ./gradlew testDebugUnitTest
 
       - name: Upload test reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: test-reports
@@ -98,7 +98,7 @@ jobs:
         run: ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
