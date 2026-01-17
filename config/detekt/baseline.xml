@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>EmptyDefaultConstructor:Exercise.kt$MuscleGroup$()</ID>
+    <ID>LongMethod:ExerciseCreationDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ExerciseCreationDialog( viewModel: ExerciseCreationViewModel = koinViewModel(), onDismiss: () -&gt; Unit, onConfirm: () -&gt; Unit )</ID>
+    <ID>LongMethod:LiftKingDatabase.kt$LiftKingDatabase.Companion.&lt;no name provided&gt;$override fun migrate(db: SupportSQLiteDatabase)</ID>
+    <ID>LongParameterList:LiftKingSimpleDialog.kt$( title: String, message: String, confirmButtonText: String, cancelButtonText: String, onDismiss: () -&gt; Unit, onConfirm: () -&gt; Unit )</ID>
+    <ID>MaxLineLength:LiftKingDatabase.kt$LiftKingDatabase.Companion.&lt;no name provided&gt;$db.execSQL("CREATE INDEX IF NOT EXISTS index_exercise_logs_exerciseId_sessionId ON exercise_logs(exerciseId, sessionId)")</ID>
+    <ID>MaxLineLength:LiftKingDatabase.kt$LiftKingDatabase.Companion.&lt;no name provided&gt;$db.execSQL("CREATE INDEX IF NOT EXISTS index_training_sessions_workoutId ON training_sessions(workoutId)")</ID>
+    <ID>MaxLineLength:LiftKingDatabase.kt$LiftKingDatabase.Companion.&lt;no name provided&gt;$db.execSQL("CREATE INDEX IF NOT EXISTS index_workout_exercises_exerciseId ON workout_exercises(exerciseId)")</ID>
+    <ID>MaxLineLength:LiftKingDatabase.kt$LiftKingDatabase.Companion.&lt;no name provided&gt;$db.execSQL("CREATE INDEX IF NOT EXISTS index_workout_exercises_workoutId ON workout_exercises(workoutId)")</ID>
+    <ID>NewLineAtEndOfFile:Colors.kt$com.daniloscataloni.liftking.ui.utils.Colors.kt</ID>
+    <ID>NewLineAtEndOfFile:Exercise.kt$com.daniloscataloni.liftking.entities.Exercise.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseCard.kt$com.daniloscataloni.liftking.ui.components.ExerciseCard.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseCardPreview.kt$com.daniloscataloni.liftking.ui.previews.ExerciseCardPreview.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseCreationDialogPreview.kt$com.daniloscataloni.liftking.ui.previews.ExerciseCreationDialogPreview.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseCreationViewModel.kt$com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseDao.kt$com.daniloscataloni.liftking.data.daos.ExerciseDao.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseListPreview.kt$com.daniloscataloni.liftking.ui.previews.ExerciseListPreview.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseListScreen.kt$com.daniloscataloni.liftking.ui.screens.ExerciseListScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseListViewModel.kt$com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:ExerciseRepository.kt$com.daniloscataloni.liftking.repositories.ExerciseRepository.kt</ID>
+    <ID>NewLineAtEndOfFile:Koin.kt$com.daniloscataloni.liftking.di.Koin.kt</ID>
+    <ID>NewLineAtEndOfFile:LiftKingApplication.kt$com.daniloscataloni.liftking.LiftKingApplication.kt</ID>
+    <ID>NewLineAtEndOfFile:LiftKingButton.kt$com.daniloscataloni.liftking.ui.components.LiftKingButton.kt</ID>
+    <ID>NewLineAtEndOfFile:LiftKingDatabase.kt$com.daniloscataloni.liftking.data.LiftKingDatabase.kt</ID>
+    <ID>NewLineAtEndOfFile:LiftKingSimpleDialog.kt$com.daniloscataloni.liftking.ui.components.LiftKingSimpleDialog.kt</ID>
+    <ID>NewLineAtEndOfFile:LiftKingSimpleDialogPreview.kt$com.daniloscataloni.liftking.ui.previews.LiftKingSimpleDialogPreview.kt</ID>
+    <ID>NewLineAtEndOfFile:MainActivity.kt$com.daniloscataloni.liftking.MainActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:MuscleGroupSelector.kt$com.daniloscataloni.liftking.ui.components.MuscleGroupSelector.kt</ID>
+    <ID>NewLineAtEndOfFile:Periodization.kt$com.daniloscataloni.liftking.entities.Periodization.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.daniloscataloni.liftking.ui.utils.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:Workout.kt$com.daniloscataloni.liftking.entities.Workout.kt</ID>
+    <ID>TooManyFunctions:TrainingRepository.kt$ITrainingRepository</ID>
+    <ID>TooManyFunctions:TrainingRepository.kt$TrainingRepository : ITrainingRepository</ID>
+    <ID>TrailingWhitespace:TrainingRepository.kt$com.daniloscataloni.liftking.repositories.TrainingRepository.kt</ID>
+    <ID>TrailingWhitespace:WorkoutRepository.kt$com.daniloscataloni.liftking.repositories.WorkoutRepository.kt</ID>
+    <ID>UnusedImports:ExerciseEntity.kt$import androidx.room.TypeConverters</ID>
+  </CurrentIssues>
+</SmellBaseline>

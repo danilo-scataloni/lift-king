@@ -10,11 +10,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DialogButtonRow(
-    cancelText: String = "Cancelar",
-    confirmText: String = "Confirmar",
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cancelText: String = "Cancelar",
+    confirmText: String = "Confirmar"
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
