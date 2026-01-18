@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 interface IExerciseRepository {
-    suspend fun insertExercise(exercise: Exercise)
+    suspend fun insertExercise(exercise: Exercise): Long
     fun getAllExercises(): Flow<List<Exercise>>
 }
 
@@ -17,8 +17,8 @@ class ExerciseRepository(
 ) : IExerciseRepository {
 
 
-    override suspend fun insertExercise(exercise: Exercise) {
-        exerciseDao.insertExercise(exercise.toExerciseEntity())
+    override suspend fun insertExercise(exercise: Exercise): Long {
+        return exerciseDao.insertExercise(exercise.toExerciseEntity())
     }
 
     override fun getAllExercises(): Flow<List<Exercise>> {

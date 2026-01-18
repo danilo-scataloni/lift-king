@@ -13,6 +13,7 @@ fun LiftKingButton(
     onClick: () -> Unit,
     text: String,
     isLight: Boolean = false,
+    enabled: Boolean = true
 ) {
     val containerColor = if (isLight) {
         MaterialTheme.colorScheme.primary
@@ -28,6 +29,7 @@ fun LiftKingButton(
 
     Button(
         modifier = modifier,
+        enabled = enabled,
         colors = ButtonColors(
             containerColor = containerColor,
             contentColor = contentColor,

@@ -45,15 +45,20 @@ interface SetLogDao {
 
     /**
      * Busca as séries do último treino completado de um exercício em um workout específico.
+     * Usa subquery para pegar apenas a sessão mais recente (por data).
      */
     @Query("""
         SELECT sl.* FROM set_logs sl
         INNER JOIN exercise_logs el ON sl.exerciseLogId = el.id
-        INNER JOIN training_sessions ts ON el.sessionId = ts.id
         WHERE el.exerciseId = :exerciseId
-            AND ts.workoutId = :workoutId
-            AND ts.isCompleted = 1
-        ORDER BY ts.date DESC, sl.setNumber ASC
+          AND el.sessionId = (
+              SELECT ts.id FROM training_sessions ts
+              WHERE ts.workoutId = :workoutId
+                AND ts.isCompleted = 1
+              ORDER BY ts.date DESC
+              LIMIT 1
+          )
+        ORDER BY sl.setNumber ASC
     """)
     suspend fun getLastSetsForExerciseInWorkout(exerciseId: Int, workoutId: Long): List<SetLogEntity>
 

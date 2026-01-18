@@ -12,6 +12,9 @@ import com.daniloscataloni.liftking.repositories.TrainingRepository
 import com.daniloscataloni.liftking.repositories.WorkoutRepository
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
@@ -23,6 +26,9 @@ val appModule = module {
     // ========== ViewModels ==========
     viewModelOf(::ExerciseCreationViewModel)
     viewModelOf(::ExerciseListViewModel)
+    viewModelOf(::PeriodizationViewModel)
+    viewModelOf(::TrainingViewModel)
+    viewModelOf(::WorkoutListViewModel)
 
     // ========== Repositories ==========
     singleOf(::ExerciseRepository) { bind<IExerciseRepository>() }
