@@ -1,8 +1,24 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
+}
+
+fun getVersionName(): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine("git", "describe", "--tags", "--abbrev=0")
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().removePrefix("v")
+}
+
+fun calculateVersionCode(versionName: String): Int {
+    val (major, minor, patch) = versionName.split(".").map { it.toInt() }
+    return major * 10000 + minor * 100 + patch
 }
 
 android {
@@ -13,8 +29,10 @@ android {
         applicationId = "com.daniloscataloni.liftking"
         minSdk = 25
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+
+        val version = getVersionName()
+        versionName = version
+        versionCode = calculateVersionCode(version)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,7 +61,7 @@ android {
         warningsAsErrors = true
         abortOnError = true
         checkDependencies = true
-        // Disable version checks - Dependabot handles dependency updates
+        // Disable noisy version checks
         disable += setOf(
             "GradleDependency",
             "NewerVersionAvailable",
