@@ -18,8 +18,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.ui.components.ExerciseCard
 import com.daniloscataloni.liftking.ui.dialogs.ExerciseCreationDialog
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
@@ -38,7 +40,7 @@ fun ExerciseListScreen(
         topBar = {
             Text(
                 modifier = Modifier.padding(top = 48.dp, start = 16.dp, bottom = 16.dp),
-                text = "Exercícios",
+                text = stringResource(R.string.screen_exercises_title),
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineLarge,
@@ -78,7 +80,7 @@ fun ExerciseListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Adicionar exercício",
+                    contentDescription = stringResource(R.string.content_desc_add_exercise),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }

@@ -53,8 +53,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.entities.Exercise
 import com.daniloscataloni.liftking.entities.MuscleGroup
 import com.daniloscataloni.liftking.entities.SetLog
@@ -98,7 +101,7 @@ fun TrainingScreen(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Voltar",
+                        contentDescription = stringResource(R.string.content_desc_back),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
@@ -122,7 +125,7 @@ fun TrainingScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Adicionar exercício",
+                        contentDescription = stringResource(R.string.content_desc_add_exercise),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
@@ -132,7 +135,7 @@ fun TrainingScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Finalizar treino",
+                        contentDescription = stringResource(R.string.content_desc_finish_workout),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -218,14 +221,14 @@ fun TrainingScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Nenhum exercício neste treino",
+                    text = stringResource(R.string.screen_training_empty_title),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
 
                 MediumSpacer()
 
                 Text(
-                    text = "Adicione exercícios ao treino primeiro",
+                    text = stringResource(R.string.screen_training_empty_subtitle),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                     fontSize = 14.sp
                 )
@@ -282,7 +285,7 @@ private fun ExerciseCard(
             MediumSpacer()
 
             Text(
-                text = "Último treino",
+                text = stringResource(R.string.screen_training_section_last),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = SmoothGray
@@ -293,7 +296,7 @@ private fun ExerciseCard(
 
             if (exerciseWithSets.lastSets.isEmpty()) {
                 Text(
-                    text = "Sem registro anterior",
+                    text = stringResource(R.string.screen_training_no_previous),
                     style = MaterialTheme.typography.bodySmall,
                     color = SmoothGray.copy(alpha = 0.6f),
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -307,7 +310,7 @@ private fun ExerciseCard(
             MediumSpacer()
 
             Text(
-                text = "Treino atual",
+                text = stringResource(R.string.screen_training_section_current),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
@@ -316,7 +319,7 @@ private fun ExerciseCard(
 
             if (exerciseWithSets.currentSets.isEmpty()) {
                 Text(
-                    text = "Nenhuma série registrada",
+                    text = stringResource(R.string.screen_training_no_sets),
                     style = MaterialTheme.typography.bodySmall,
                     color = SmoothGray.copy(alpha = 0.6f),
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -346,7 +349,7 @@ private fun ExerciseCard(
                 SmallSpacer()
 
                 Text(
-                    text = "Adicionar série",
+                    text = stringResource(R.string.button_add_set),
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -361,27 +364,27 @@ private fun SetTableHeader() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Série",
+            text = stringResource(R.string.table_header_set),
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(50.dp)
         )
         Text(
-            text = "Peso",
+            text = stringResource(R.string.table_header_weight),
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(60.dp),
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Reps",
+            text = stringResource(R.string.table_header_reps),
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(50.dp),
             textAlign = TextAlign.Center
         )
         Text(
-            text = "RIR",
+            text = stringResource(R.string.table_header_rir),
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(40.dp),
@@ -440,7 +443,7 @@ private fun SetRow(
             textAlign = TextAlign.Center
         )
         Text(
-            text = set.rir?.toString() ?: "Falha",
+            text = set.rir?.toString() ?: stringResource(R.string.label_failure),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isCurrentSession) FontWeight.SemiBold else FontWeight.Normal,
             color = textColor,
@@ -475,7 +478,7 @@ private fun AddSetDialog(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LiftKingHeading(text = "Nova Série")
+                LiftKingHeading(text = stringResource(R.string.dialog_set_add_title))
                 Text(
                     text = exerciseName,
                     style = MaterialTheme.typography.bodySmall,
@@ -491,7 +494,7 @@ private fun AddSetDialog(
                     OutlinedTextField(
                         value = weight,
                         onValueChange = { weight = it },
-                        label = { Text("Peso (kg)") },
+                        label = { Text(stringResource(R.string.label_weight_kg)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -502,7 +505,7 @@ private fun AddSetDialog(
                     OutlinedTextField(
                         value = reps,
                         onValueChange = { reps = it },
-                        label = { Text("Reps") },
+                        label = { Text(stringResource(R.string.label_reps)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -513,7 +516,7 @@ private fun AddSetDialog(
                     OutlinedTextField(
                         value = rir,
                         onValueChange = { rir = it },
-                        label = { Text("RIR") },
+                        label = { Text(stringResource(R.string.label_rir)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -566,17 +569,17 @@ private fun EditSetDialog(
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LiftKingHeading(text = "Excluir série?")
+                    LiftKingHeading(text = stringResource(R.string.dialog_set_delete_title))
                     MediumSpacer()
                     Text(
-                        text = "Essa ação não pode ser desfeita.",
+                        text = stringResource(R.string.dialog_set_delete_message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = SmoothGray
                     )
                     MediumSpacer()
                     DialogButtonRow(
-                        cancelText = "Cancelar",
-                        confirmText = "Excluir",
+                        cancelText = stringResource(R.string.button_cancel),
+                        confirmText = stringResource(R.string.button_delete),
                         onCancel = { showDeleteConfirm = false },
                         onConfirm = {
                             showDeleteConfirm = false
@@ -601,7 +604,7 @@ private fun EditSetDialog(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LiftKingHeading(text = "Editar Série ${set.setNumber}")
+                    LiftKingHeading(text = stringResource(R.string.dialog_set_edit_title, set.setNumber))
 
                     MediumSpacer()
 
@@ -612,7 +615,7 @@ private fun EditSetDialog(
                         OutlinedTextField(
                             value = weight,
                             onValueChange = { weight = it },
-                            label = { Text("Peso (kg)") },
+                            label = { Text(stringResource(R.string.label_weight_kg)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -623,7 +626,7 @@ private fun EditSetDialog(
                         OutlinedTextField(
                             value = reps,
                             onValueChange = { reps = it },
-                            label = { Text("Reps") },
+                            label = { Text(stringResource(R.string.label_reps)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -634,7 +637,7 @@ private fun EditSetDialog(
                         OutlinedTextField(
                             value = rir,
                             onValueChange = { rir = it },
-                            label = { Text("RIR") },
+                            label = { Text(stringResource(R.string.label_rir)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -652,7 +655,7 @@ private fun EditSetDialog(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Excluir série",
+                            text = stringResource(R.string.button_delete_set),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -715,15 +718,15 @@ private fun FinishWorkoutDialog(
 
                 MediumSpacer()
 
-                LiftKingHeading(text = "Finalizar treino?")
+                LiftKingHeading(text = stringResource(R.string.dialog_finish_title))
 
                 SmallSpacer()
 
                 Text(
                     text = if (setsCount > 0) {
-                        "Você registrou $setsCount ${if (setsCount == 1) "série" else "séries"} neste treino."
+                        pluralStringResource(R.plurals.dialog_finish_message_sets, setsCount, setsCount)
                     } else {
-                        "Nenhuma série foi registrada neste treino."
+                        stringResource(R.string.dialog_finish_message_empty)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = SmoothGray,
@@ -733,8 +736,8 @@ private fun FinishWorkoutDialog(
                 MediumSpacer()
 
                 DialogButtonRow(
-                    cancelText = "Continuar",
-                    confirmText = "Finalizar",
+                    cancelText = stringResource(R.string.button_continue),
+                    confirmText = stringResource(R.string.button_finish),
                     onCancel = onDismiss,
                     onConfirm = onConfirm
                 )
@@ -762,7 +765,7 @@ private fun AddExerciseDialog(
             Column(
                 modifier = Modifier.padding(24.dp)
             ) {
-                LiftKingHeading(text = "Adicionar Exercício")
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_add_title))
                 MediumSpacer()
 
                 // Botão para criar novo exercício
@@ -777,7 +780,7 @@ private fun AddExerciseDialog(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Criar novo exercício",
+                        text = stringResource(R.string.button_create_exercise),
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -786,7 +789,7 @@ private fun AddExerciseDialog(
 
                 if (exercises.isEmpty()) {
                     Text(
-                        text = "Nenhum exercício cadastrado ainda.",
+                        text = stringResource(R.string.dialog_exercise_empty),
                         color = SmoothGray,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -796,7 +799,7 @@ private fun AddExerciseDialog(
                         onClick = onDismiss,
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text("Fechar")
+                        Text(stringResource(R.string.button_close))
                     }
                 } else {
                     LazyColumn(
@@ -858,13 +861,13 @@ private fun CreateExerciseDialog(
             Column(
                 modifier = Modifier.padding(24.dp)
             ) {
-                LiftKingHeading(text = "Criar Exercício")
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_create_title))
                 MediumSpacer()
 
                 OutlinedTextField(
                     value = exerciseName,
                     onValueChange = onNameChange,
-                    label = { Text("Nome do exercício") },
+                    label = { Text(stringResource(R.string.label_exercise_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -877,7 +880,7 @@ private fun CreateExerciseDialog(
 
                 // Seletor de grupo muscular primário
                 Text(
-                    text = "Grupo muscular primário",
+                    text = stringResource(R.string.label_muscle_group_primary),
                     style = MaterialTheme.typography.labelMedium,
                     color = SmoothGray
                 )
@@ -892,7 +895,7 @@ private fun CreateExerciseDialog(
 
                 // Seletor de grupo muscular secundário
                 Text(
-                    text = "Grupo muscular secundário (opcional)",
+                    text = stringResource(R.string.label_muscle_group_secondary),
                     style = MaterialTheme.typography.labelMedium,
                     color = SmoothGray
                 )

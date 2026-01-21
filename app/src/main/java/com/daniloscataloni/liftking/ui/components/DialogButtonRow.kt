@@ -6,17 +6,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.daniloscataloni.liftking.R
 
 @Composable
 fun DialogButtonRow(
     modifier: Modifier = Modifier,
-    cancelText: String = "Cancelar",
-    confirmText: String = "Confirmar",
+    cancelText: String? = null,
+    confirmText: String? = null,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     confirmEnabled: Boolean = true
 ) {
+    val actualCancelText = cancelText ?: stringResource(R.string.button_cancel)
+    val actualConfirmText = confirmText ?: stringResource(R.string.button_confirm)
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -27,7 +32,7 @@ fun DialogButtonRow(
                 .padding(8.dp),
             isLight = false,
             onClick = onCancel,
-            text = cancelText
+            text = actualCancelText
         )
         LiftKingButton(
             modifier = Modifier
@@ -35,7 +40,7 @@ fun DialogButtonRow(
                 .padding(8.dp),
             isLight = true,
             onClick = onConfirm,
-            text = confirmText,
+            text = actualConfirmText,
             enabled = confirmEnabled
         )
     }

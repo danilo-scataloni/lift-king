@@ -1,3 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lift King</string>
+
+    <!-- ==================== TELAS ==================== -->
+
+    <!-- Exercícios -->
+    <string name="screen_exercises_title">Exercícios</string>
+
+    <!-- Periodizações -->
+    <string name="screen_periodization_title">Periodizações</string>
+    <string name="screen_periodization_empty_title">Nenhuma periodização criada</string>
+    <string name="screen_periodization_empty_subtitle">Toque no + para criar uma nova</string>
+
+    <!-- Treinos -->
+    <string name="screen_workouts_title">Treinos</string>
+    <string name="screen_workouts_empty_title">Nenhum treino criado</string>
+    <string name="screen_workouts_empty_subtitle">Toque no + para criar um novo</string>
+
+    <!-- Training Session -->
+    <string name="screen_training_empty_title">Nenhum exercício neste treino</string>
+    <string name="screen_training_empty_subtitle">Adicione exercícios ao treino primeiro</string>
+    <string name="screen_training_section_last">Último treino</string>
+    <string name="screen_training_section_current">Treino atual</string>
+    <string name="screen_training_no_previous">Sem registro anterior</string>
+    <string name="screen_training_no_sets">Nenhuma série registrada</string>
+
+    <!-- ==================== DIALOGS ==================== -->
+
+    <string name="dialog_periodization_create_title">Nova Periodização</string>
+    <string name="dialog_periodization_create_placeholder">Ex: Hipertrofia 2024</string>
+
+    <string name="dialog_workout_create_title">Novo Treino</string>
+    <string name="dialog_workout_create_placeholder">Ex: Treino A - Peito</string>
+
+    <string name="dialog_exercise_add_title">Adicionar Exercício</string>
+    <string name="dialog_exercise_create_title">Criar Exercício</string>
+    <string name="dialog_exercise_empty">Nenhum exercício cadastrado ainda.</string>
+
+    <string name="dialog_set_add_title">Nova Série</string>
+    <string name="dialog_set_edit_title">Editar Série %1$d</string>
+    <string name="dialog_set_delete_title">Excluir série?</string>
+    <string name="dialog_set_delete_message">Essa ação não pode ser desfeita.</string>
+
+    <string name="dialog_finish_title">Finalizar treino?</string>
+    <string name="dialog_finish_message_empty">Nenhuma série foi registrada neste treino.</string>
+
+    <!-- Plurals para contagem de séries -->
+    <plurals name="dialog_finish_message_sets">
+        <item quantity="one">Você registrou %1$d série neste treino.</item>
+        <item quantity="other">Você registrou %1$d séries neste treino.</item>
+    </plurals>
+
+    <!-- ==================== BOTÕES ==================== -->
+
+    <string name="button_cancel">Cancelar</string>
+    <string name="button_confirm">Confirmar</string>
+    <string name="button_add">Adicionar</string>
+    <string name="button_close">Fechar</string>
+    <string name="button_continue">Continuar</string>
+    <string name="button_finish">Finalizar</string>
+    <string name="button_delete">Excluir</string>
+    <string name="button_add_set">Adicionar série</string>
+    <string name="button_delete_set">Excluir série</string>
+    <string name="button_create_exercise">Criar novo exercício</string>
+
+    <!-- ==================== LABELS ==================== -->
+
+    <string name="label_exercise_name">Nome do exercício</string>
+    <string name="label_muscle_group_primary">Grupo muscular primário</string>
+    <string name="label_muscle_group_secondary">Grupo muscular secundário (opcional)</string>
+    <string name="label_muscle_groups">Grupos Musculares</string>
+    <string name="label_muscle_group_main">Grupo muscular principal</string>
+    <string name="label_muscle_group_auxiliary">Grupo muscular auxiliar</string>
+    <string name="label_weight_kg">Peso (kg)</string>
+    <string name="label_reps">Reps</string>
+    <string name="label_rir">RIR</string>
+    <string name="label_failure">Falha</string>
+
+    <!-- ==================== PLACEHOLDERS ==================== -->
+
+    <string name="placeholder_exercise_name">Digite o nome do exercício</string>
+
+    <!-- ==================== TABELA ==================== -->
+
+    <string name="table_header_set">Série</string>
+    <string name="table_header_weight">Peso</string>
+    <string name="table_header_reps">Reps</string>
+    <string name="table_header_rir">RIR</string>
+
+    <!-- ==================== GRUPOS MUSCULARES ==================== -->
+
+    <string name="muscle_group_chest">Peito</string>
+    <string name="muscle_group_back">Costas</string>
+    <string name="muscle_group_quads">Quadríceps</string>
+    <string name="muscle_group_hamstrings">Posterior de Coxa</string>
+    <string name="muscle_group_biceps">Bíceps</string>
+    <string name="muscle_group_triceps">Tríceps</string>
+    <string name="muscle_group_shoulders">Ombro</string>
+    <string name="muscle_group_calves">Panturrilha</string>
+    <string name="muscle_group_abs">Abdominal</string>
+    <string name="muscle_group_forearms">Antebraço</string>
+
+    <!-- ==================== ACESSIBILIDADE ==================== -->
+
+    <string name="content_desc_back">Voltar</string>
+    <string name="content_desc_add_exercise">Adicionar exercício</string>
+    <string name="content_desc_new_periodization">Nova periodização</string>
+    <string name="content_desc_new_workout">Novo treino</string>
+    <string name="content_desc_finish_workout">Finalizar treino</string>
+    <string name="content_desc_active">Ativa</string>
+    <string name="content_desc_exercise_icon">Ícone de exercício</string>
+    <string name="content_desc_view_details">Ver detalhes</string>
+
+    <!-- ==================== ERROS ==================== -->
+
+    <string name="error_unknown_exercise">Exercício desconhecido</string>
 </resources>

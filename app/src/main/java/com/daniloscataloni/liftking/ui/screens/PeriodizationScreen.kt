@@ -32,8 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.entities.Periodization
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
@@ -60,7 +62,7 @@ fun PeriodizationScreen(
         topBar = {
             Text(
                 modifier = Modifier.padding(top = 48.dp, start = 16.dp, bottom = 16.dp),
-                text = "Periodizações",
+                text = stringResource(R.string.screen_periodization_title),
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineLarge,
@@ -74,7 +76,7 @@ fun PeriodizationScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Nova periodização",
+                    contentDescription = stringResource(R.string.content_desc_new_periodization),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -99,12 +101,12 @@ fun PeriodizationScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Nenhuma periodização criada",
+                    text = stringResource(R.string.screen_periodization_empty_title),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
                 MediumSpacer()
                 Text(
-                    text = "Toque no + para criar uma nova",
+                    text = stringResource(R.string.screen_periodization_empty_subtitle),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                     fontSize = 14.sp
                 )
@@ -168,7 +170,7 @@ private fun PeriodizationCard(
             if (isActive) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Ativa",
+                    contentDescription = stringResource(R.string.content_desc_active),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -198,12 +200,12 @@ private fun CreatePeriodizationDialog(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LiftKingHeading(text = "Nova Periodização")
+                LiftKingHeading(text = stringResource(R.string.dialog_periodization_create_title))
                 MediumSpacer()
                 LiftKingTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    placeholder = "Ex: Hipertrofia 2024"
+                    placeholder = stringResource(R.string.dialog_periodization_create_placeholder)
                 )
                 MediumSpacer()
                 DialogButtonRow(

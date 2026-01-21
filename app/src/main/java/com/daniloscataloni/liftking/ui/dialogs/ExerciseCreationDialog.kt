@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LargeSpacer
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
@@ -57,23 +59,23 @@ fun ExerciseCreationDialog(
             ) {
                 SmallSpacer()
 
-                LiftKingHeading(text = "Adicionar exercício")
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_add_title))
 
                 LargeSpacer()
 
-                LiftKingLabel(text = "Nome do exercício")
+                LiftKingLabel(text = stringResource(R.string.label_exercise_name))
 
                 SmallSpacer()
 
                 LiftKingTextField(
                     value = uiState.exercise.description,
                     onValueChange = { viewModel.onExerciseNameChange(it) },
-                    placeholder = "Digite o nome do exercício"
+                    placeholder = stringResource(R.string.placeholder_exercise_name)
                 )
 
                 LargeSpacer()
 
-                LiftKingLabel(text = "Grupo muscular principal")
+                LiftKingLabel(text = stringResource(R.string.label_muscle_group_main))
 
                 SmallSpacer()
 
@@ -84,7 +86,7 @@ fun ExerciseCreationDialog(
 
                 LargeSpacer()
 
-                LiftKingLabel(text = "Grupo muscular auxiliar")
+                LiftKingLabel(text = stringResource(R.string.label_muscle_group_auxiliary))
 
                 SmallSpacer()
 
@@ -97,8 +99,8 @@ fun ExerciseCreationDialog(
 
                 DialogButtonRow(
                     modifier = Modifier.fillMaxHeight(),
-                    cancelText = "Cancelar",
-                    confirmText = "Adicionar",
+                    cancelText = stringResource(R.string.button_cancel),
+                    confirmText = stringResource(R.string.button_add),
                     onCancel = onDismiss,
                     onConfirm = {
                         viewModel.onSaveExercise()

@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.entities.MuscleGroup
 import com.daniloscataloni.liftking.entities.toReadableString
 
@@ -36,7 +38,7 @@ fun MuscleGroupSelector(
             value = selectedMuscleGroup?.toReadableString() ?: "",
             onValueChange = {},
             readOnly = true,
-            label = { Text("Grupos Musculares") },
+            label = { Text(stringResource(R.string.label_muscle_groups)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = isMuscleGroupMenuOpen

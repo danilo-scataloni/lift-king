@@ -41,8 +41,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.entities.Workout
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
@@ -82,13 +84,13 @@ fun WorkoutListScreen(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Voltar",
+                        contentDescription = stringResource(R.string.content_desc_back),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Column {
                     Text(
-                        text = "Treinos",
+                        text = stringResource(R.string.screen_workouts_title),
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineLarge,
@@ -111,7 +113,7 @@ fun WorkoutListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Novo treino",
+                    contentDescription = stringResource(R.string.content_desc_new_workout),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -136,12 +138,12 @@ fun WorkoutListScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Nenhum treino criado",
+                    text = stringResource(R.string.screen_workouts_empty_title),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
                 MediumSpacer()
                 Text(
-                    text = "Toque no + para criar um novo",
+                    text = stringResource(R.string.screen_workouts_empty_subtitle),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                     fontSize = 14.sp
                 )
@@ -242,12 +244,12 @@ private fun CreateWorkoutDialog(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LiftKingHeading(text = "Novo Treino")
+                LiftKingHeading(text = stringResource(R.string.dialog_workout_create_title))
                 MediumSpacer()
                 LiftKingTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    placeholder = "Ex: Treino A - Peito"
+                    placeholder = stringResource(R.string.dialog_workout_create_placeholder)
                 )
                 MediumSpacer()
                 DialogButtonRow(

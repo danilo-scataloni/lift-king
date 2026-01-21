@@ -18,7 +18,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.entities.Exercise
 import com.daniloscataloni.liftking.entities.toReadableString
 import com.daniloscataloni.liftking.ui.utils.BackgroundGray
@@ -53,7 +55,7 @@ fun ExerciseCard(
                     imageVector = Icons.Default.FitnessCenter,
                     modifier = Modifier.padding(8.dp).size(30.dp),
                     tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = "Ícone de exercício"
+                    contentDescription = stringResource(R.string.content_desc_exercise_icon)
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -74,7 +76,7 @@ fun ExerciseCard(
                 modifier = Modifier.height(20.dp).padding(end = 20.dp),
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                contentDescription = "Ver detalhes"
+                contentDescription = stringResource(R.string.content_desc_view_details)
             )
         }
     }
