@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.daniloscataloni.liftking.R
-import com.daniloscataloni.liftking.entities.MuscleGroup
-import com.daniloscataloni.liftking.entities.toReadableString
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
+import com.daniloscataloni.liftking.ui.extensions.toReadableString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

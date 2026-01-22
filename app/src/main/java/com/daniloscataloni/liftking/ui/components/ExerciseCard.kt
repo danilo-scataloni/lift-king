@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.daniloscataloni.liftking.R
-import com.daniloscataloni.liftking.entities.Exercise
-import com.daniloscataloni.liftking.entities.toReadableString
-import com.daniloscataloni.liftking.ui.utils.BackgroundGray
-import com.daniloscataloni.liftking.ui.utils.BorderGray
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.ui.extensions.toReadableString
+import com.daniloscataloni.liftking.ui.theme.BackgroundGray
+import com.daniloscataloni.liftking.ui.theme.BorderGray
 
 @Composable
 fun ExerciseCard(

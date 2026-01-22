@@ -1,11 +1,11 @@
-package com.daniloscataloni.liftking.repositories
+package com.daniloscataloni.liftking.data.repositories
 
 import com.daniloscataloni.liftking.data.daos.WorkoutDao
 import com.daniloscataloni.liftking.data.daos.WorkoutExerciseDao
 import com.daniloscataloni.liftking.data.mappers.toDomain
 import com.daniloscataloni.liftking.data.mappers.toEntity
-import com.daniloscataloni.liftking.entities.Workout
-import com.daniloscataloni.liftking.entities.WorkoutExercise
+import com.daniloscataloni.liftking.domain.models.Workout
+import com.daniloscataloni.liftking.domain.models.WorkoutExercise
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

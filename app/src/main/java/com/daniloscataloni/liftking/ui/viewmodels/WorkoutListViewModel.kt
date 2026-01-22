@@ -2,9 +2,9 @@ package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daniloscataloni.liftking.entities.Workout
-import com.daniloscataloni.liftking.repositories.IPeriodizationRepository
-import com.daniloscataloni.liftking.repositories.IWorkoutRepository
+import com.daniloscataloni.liftking.domain.models.Workout
+import com.daniloscataloni.liftking.data.repositories.IPeriodizationRepository
+import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

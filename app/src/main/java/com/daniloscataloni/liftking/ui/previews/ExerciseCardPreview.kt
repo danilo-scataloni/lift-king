@@ -2,8 +2,8 @@ package com.daniloscataloni.liftking.ui.previews
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.daniloscataloni.liftking.entities.Exercise
-import com.daniloscataloni.liftking.entities.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
 import com.daniloscataloni.liftking.ui.components.ExerciseCard
 import com.daniloscataloni.liftking.ui.theme.LiftKingTheme
 

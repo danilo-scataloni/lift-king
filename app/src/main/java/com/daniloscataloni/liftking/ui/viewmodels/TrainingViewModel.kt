@@ -2,13 +2,13 @@ package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daniloscataloni.liftking.entities.Exercise
-import com.daniloscataloni.liftking.entities.MuscleGroup
-import com.daniloscataloni.liftking.entities.SetLog
-import com.daniloscataloni.liftking.entities.WorkoutExercise
-import com.daniloscataloni.liftking.repositories.IExerciseRepository
-import com.daniloscataloni.liftking.repositories.ITrainingRepository
-import com.daniloscataloni.liftking.repositories.IWorkoutRepository
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.SetLog
+import com.daniloscataloni.liftking.domain.models.WorkoutExercise
+import com.daniloscataloni.liftking.data.repositories.IExerciseRepository
+import com.daniloscataloni.liftking.data.repositories.ITrainingRepository
+import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -68,7 +68,7 @@ class TrainingViewModel(
             val exercisesWithSets = workoutExercises.map { we ->
                 val exercise = allExercises.find { it.id == we.exerciseId }
                     ?: Exercise(id = we.exerciseId, description = "Exercício desconhecido",
-                        primaryMuscleGroup = com.daniloscataloni.liftking.entities.MuscleGroup.CHEST,
+                        primaryMuscleGroup = MuscleGroup.CHEST,
                         secondaryMuscleGroups = null)
 
                 val lastSets = trainingRepository.getLastSetsForExercise(we.exerciseId, workoutId)

@@ -1,28 +1,9 @@
-package com.daniloscataloni.liftking.entities
+package com.daniloscataloni.liftking.ui.extensions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.daniloscataloni.liftking.R
-
-data class Exercise (
-    val id: Int,
-    val description: String,
-    val primaryMuscleGroup: MuscleGroup,
-    val secondaryMuscleGroups: MuscleGroup?
-)
-
-enum class MuscleGroup() {
-    CHEST,
-    BACK,
-    QUADS,
-    HAMSTRINGS,
-    BICEPS,
-    TRICEPS,
-    SHOULDERS,
-    CALVES,
-    ABS,
-    FOREARMS
-}
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
 
 @Composable
 fun MuscleGroup.toReadableString(): String {

@@ -1,4 +1,4 @@
-package com.daniloscataloni.liftking.entities
+package com.daniloscataloni.liftking.domain.models
 
 /**
  * Domain model para Periodização.

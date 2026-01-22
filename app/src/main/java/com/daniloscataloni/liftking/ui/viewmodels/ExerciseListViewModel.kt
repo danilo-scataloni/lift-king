@@ -1,8 +1,8 @@
 package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.daniloscataloni.liftking.entities.Exercise
-import com.daniloscataloni.liftking.repositories.IExerciseRepository
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.data.repositories.IExerciseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

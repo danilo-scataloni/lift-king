@@ -45,13 +45,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniloscataloni.liftking.R
-import com.daniloscataloni.liftking.entities.Workout
+import com.daniloscataloni.liftking.domain.models.Workout
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.LiftKingTextField
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
-import com.daniloscataloni.liftking.ui.utils.BackgroundGray
-import com.daniloscataloni.liftking.ui.utils.BorderGray
+import com.daniloscataloni.liftking.ui.theme.BackgroundGray
+import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel
 import org.koin.androidx.compose.koinViewModel
 

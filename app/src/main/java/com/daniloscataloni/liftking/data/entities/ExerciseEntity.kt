@@ -3,7 +3,7 @@ package com.daniloscataloni.liftking.data.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.daniloscataloni.liftking.entities.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
 
 @Entity(tableName = "exercises")
 data class ExerciseEntity(

@@ -2,14 +2,14 @@ package com.daniloscataloni.liftking.di
 
 import androidx.room.Room
 import com.daniloscataloni.liftking.data.LiftKingDatabase
-import com.daniloscataloni.liftking.repositories.ExerciseRepository
-import com.daniloscataloni.liftking.repositories.IExerciseRepository
-import com.daniloscataloni.liftking.repositories.IPeriodizationRepository
-import com.daniloscataloni.liftking.repositories.ITrainingRepository
-import com.daniloscataloni.liftking.repositories.IWorkoutRepository
-import com.daniloscataloni.liftking.repositories.PeriodizationRepository
-import com.daniloscataloni.liftking.repositories.TrainingRepository
-import com.daniloscataloni.liftking.repositories.WorkoutRepository
+import com.daniloscataloni.liftking.data.repositories.ExerciseRepository
+import com.daniloscataloni.liftking.data.repositories.IExerciseRepository
+import com.daniloscataloni.liftking.data.repositories.IPeriodizationRepository
+import com.daniloscataloni.liftking.data.repositories.ITrainingRepository
+import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
+import com.daniloscataloni.liftking.data.repositories.PeriodizationRepository
+import com.daniloscataloni.liftking.data.repositories.TrainingRepository
+import com.daniloscataloni.liftking.data.repositories.WorkoutRepository
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel

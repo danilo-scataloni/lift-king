@@ -1,4 +1,4 @@
-package com.daniloscataloni.liftking.repositories
+package com.daniloscataloni.liftking.data.repositories
 
 import com.daniloscataloni.liftking.data.daos.ExerciseLogDao
 import com.daniloscataloni.liftking.data.daos.SetLogDao
@@ -7,9 +7,9 @@ import com.daniloscataloni.liftking.data.entities.ExerciseLogEntity
 import com.daniloscataloni.liftking.data.entities.TrainingSessionEntity
 import com.daniloscataloni.liftking.data.mappers.toDomain
 import com.daniloscataloni.liftking.data.mappers.toEntity
-import com.daniloscataloni.liftking.entities.ExerciseLog
-import com.daniloscataloni.liftking.entities.SetLog
-import com.daniloscataloni.liftking.entities.TrainingSession
+import com.daniloscataloni.liftking.domain.models.ExerciseLog
+import com.daniloscataloni.liftking.domain.models.SetLog
+import com.daniloscataloni.liftking.domain.models.TrainingSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

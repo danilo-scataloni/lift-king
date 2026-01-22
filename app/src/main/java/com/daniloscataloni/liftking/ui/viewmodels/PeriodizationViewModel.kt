@@ -2,8 +2,8 @@ package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daniloscataloni.liftking.entities.Periodization
-import com.daniloscataloni.liftking.repositories.IPeriodizationRepository
+import com.daniloscataloni.liftking.domain.models.Periodization
+import com.daniloscataloni.liftking.data.repositories.IPeriodizationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,9 +1,9 @@
-package com.daniloscataloni.liftking.repositories
+package com.daniloscataloni.liftking.data.repositories
 
 import com.daniloscataloni.liftking.data.daos.PeriodizationDao
 import com.daniloscataloni.liftking.data.mappers.toDomain
 import com.daniloscataloni.liftking.data.mappers.toEntity
-import com.daniloscataloni.liftking.entities.Periodization
+import com.daniloscataloni.liftking.domain.models.Periodization
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -4,11 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.daniloscataloni.liftking.ui.utils.BackgroundGray
-import com.daniloscataloni.liftking.ui.utils.ButtonBackgroundGray
-import com.daniloscataloni.liftking.ui.utils.DeepBlack
-import com.daniloscataloni.liftking.ui.utils.SmoothGray
-import com.daniloscataloni.liftking.ui.utils.Typography
 
 private val LiftKingColorScheme = darkColorScheme(
     primary = Color.White,

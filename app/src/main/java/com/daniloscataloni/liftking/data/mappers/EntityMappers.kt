@@ -7,13 +7,13 @@ import com.daniloscataloni.liftking.data.entities.SetLogEntity
 import com.daniloscataloni.liftking.data.entities.TrainingSessionEntity
 import com.daniloscataloni.liftking.data.entities.WorkoutEntity
 import com.daniloscataloni.liftking.data.entities.WorkoutExerciseEntity
-import com.daniloscataloni.liftking.entities.Exercise
-import com.daniloscataloni.liftking.entities.ExerciseLog
-import com.daniloscataloni.liftking.entities.Periodization
-import com.daniloscataloni.liftking.entities.SetLog
-import com.daniloscataloni.liftking.entities.TrainingSession
-import com.daniloscataloni.liftking.entities.Workout
-import com.daniloscataloni.liftking.entities.WorkoutExercise
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.domain.models.ExerciseLog
+import com.daniloscataloni.liftking.domain.models.Periodization
+import com.daniloscataloni.liftking.domain.models.SetLog
+import com.daniloscataloni.liftking.domain.models.TrainingSession
+import com.daniloscataloni.liftking.domain.models.Workout
+import com.daniloscataloni.liftking.domain.models.WorkoutExercise
 
 fun ExerciseEntity.toDomain(): Exercise {
     return Exercise(
