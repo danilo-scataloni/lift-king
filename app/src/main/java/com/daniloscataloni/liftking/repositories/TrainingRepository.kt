@@ -4,8 +4,9 @@ import com.daniloscataloni.liftking.data.daos.ExerciseLogDao
 import com.daniloscataloni.liftking.data.daos.SetLogDao
 import com.daniloscataloni.liftking.data.daos.TrainingSessionDao
 import com.daniloscataloni.liftking.data.entities.ExerciseLogEntity
-import com.daniloscataloni.liftking.data.entities.SetLogEntity
 import com.daniloscataloni.liftking.data.entities.TrainingSessionEntity
+import com.daniloscataloni.liftking.data.mappers.toDomain
+import com.daniloscataloni.liftking.data.mappers.toEntity
 import com.daniloscataloni.liftking.entities.ExerciseLog
 import com.daniloscataloni.liftking.entities.SetLog
 import com.daniloscataloni.liftking.entities.TrainingSession
@@ -128,66 +129,4 @@ class TrainingRepository(
     override suspend fun deleteSet(setLog: SetLog) {
         setLogDao.delete(setLog.toEntity())
     }
-}
-
-// --- Extensões de conversão ---
-
-private fun TrainingSessionEntity.toDomain(): TrainingSession {
-    return TrainingSession(
-        id = this.id,
-        workoutId = this.workoutId,
-        date = this.date,
-        notes = this.notes,
-        isCompleted = this.isCompleted
-    )
-}
-
-private fun TrainingSession.toEntity(): TrainingSessionEntity {
-    return TrainingSessionEntity(
-        id = this.id,
-        workoutId = this.workoutId,
-        date = this.date,
-        notes = this.notes,
-        isCompleted = this.isCompleted
-    )
-}
-
-private fun ExerciseLogEntity.toDomain(): ExerciseLog {
-    return ExerciseLog(
-        id = this.id,
-        sessionId = this.sessionId,
-        exerciseId = this.exerciseId,
-        notes = this.notes
-    )
-}
-
-private fun ExerciseLog.toEntity(): ExerciseLogEntity {
-    return ExerciseLogEntity(
-        id = this.id,
-        sessionId = this.sessionId,
-        exerciseId = this.exerciseId,
-        notes = this.notes
-    )
-}
-
-private fun SetLogEntity.toDomain(): SetLog {
-    return SetLog(
-        id = this.id,
-        exerciseLogId = this.exerciseLogId,
-        setNumber = this.setNumber,
-        weight = this.weight,
-        reps = this.reps,
-        rir = this.rir
-    )
-}
-
-private fun SetLog.toEntity(): SetLogEntity {
-    return SetLogEntity(
-        id = this.id,
-        exerciseLogId = this.exerciseLogId,
-        setNumber = this.setNumber,
-        weight = this.weight,
-        reps = this.reps,
-        rir = this.rir
-    )
 }

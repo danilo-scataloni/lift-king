@@ -1,7 +1,8 @@
 package com.daniloscataloni.liftking.repositories
 
 import com.daniloscataloni.liftking.data.daos.ExerciseDao
-import com.daniloscataloni.liftking.data.entities.ExerciseEntity
+import com.daniloscataloni.liftking.data.mappers.toDomain
+import com.daniloscataloni.liftking.data.mappers.toEntity
 import com.daniloscataloni.liftking.entities.Exercise
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,33 +19,13 @@ class ExerciseRepository(
 
 
     override suspend fun insertExercise(exercise: Exercise): Long {
-        return exerciseDao.insertExercise(exercise.toExerciseEntity())
+        return exerciseDao.insertExercise(exercise.toEntity())
     }
 
     override fun getAllExercises(): Flow<List<Exercise>> {
         return exerciseDao.getAllExercises()
             .map { exerciseEntities ->
-                exerciseEntities.map { it.toExercise() }
+                exerciseEntities.map { it.toDomain() }
             }
     }
-}
-
-
-
-private fun Exercise.toExerciseEntity(): ExerciseEntity {
-    return ExerciseEntity(
-        id = this.id,
-        description = this.description,
-        primaryMuscleGroup = this.primaryMuscleGroup,
-        secondaryMuscleGroups = this.secondaryMuscleGroups
-    )
-}
-
-private fun ExerciseEntity.toExercise(): Exercise {
-    return Exercise(
-        id = this.id,
-        description = this.description,
-        primaryMuscleGroup = this.primaryMuscleGroup,
-        secondaryMuscleGroups = this.secondaryMuscleGroups
-    )
 }

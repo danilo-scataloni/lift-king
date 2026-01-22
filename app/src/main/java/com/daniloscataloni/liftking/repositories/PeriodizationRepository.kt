@@ -1,7 +1,8 @@
 package com.daniloscataloni.liftking.repositories
 
 import com.daniloscataloni.liftking.data.daos.PeriodizationDao
-import com.daniloscataloni.liftking.data.entities.PeriodizationEntity
+import com.daniloscataloni.liftking.data.mappers.toDomain
+import com.daniloscataloni.liftking.data.mappers.toEntity
 import com.daniloscataloni.liftking.entities.Periodization
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -61,25 +62,4 @@ class PeriodizationRepository(
     override suspend fun unarchive(id: Long) {
         periodizationDao.unarchive(id)
     }
-}
-
-// Extensões para conversão Entity <-> Domain
-private fun PeriodizationEntity.toDomain(): Periodization {
-    return Periodization(
-        id = this.id,
-        name = this.name,
-        isActive = this.isActive,
-        isArchived = this.isArchived,
-        createdAt = this.createdAt
-    )
-}
-
-private fun Periodization.toEntity(): PeriodizationEntity {
-    return PeriodizationEntity(
-        id = this.id,
-        name = this.name,
-        isActive = this.isActive,
-        isArchived = this.isArchived,
-        createdAt = this.createdAt
-    )
 }

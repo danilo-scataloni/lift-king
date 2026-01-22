@@ -2,8 +2,8 @@ package com.daniloscataloni.liftking.repositories
 
 import com.daniloscataloni.liftking.data.daos.WorkoutDao
 import com.daniloscataloni.liftking.data.daos.WorkoutExerciseDao
-import com.daniloscataloni.liftking.data.entities.WorkoutEntity
-import com.daniloscataloni.liftking.data.entities.WorkoutExerciseEntity
+import com.daniloscataloni.liftking.data.mappers.toDomain
+import com.daniloscataloni.liftking.data.mappers.toEntity
 import com.daniloscataloni.liftking.entities.Workout
 import com.daniloscataloni.liftking.entities.WorkoutExercise
 import kotlinx.coroutines.flow.Flow
@@ -79,44 +79,4 @@ class WorkoutRepository(
             workoutExerciseDao.updateOrder(exercise.id, exercise.order)
         }
     }
-}
-
-// --- Extensões de conversão ---
-
-private fun WorkoutEntity.toDomain(): Workout {
-    return Workout(
-        id = this.id,
-        periodizationId = this.periodizationId,
-        name = this.name,
-        order = this.order
-    )
-}
-
-private fun Workout.toEntity(): WorkoutEntity {
-    return WorkoutEntity(
-        id = this.id,
-        periodizationId = this.periodizationId,
-        name = this.name,
-        order = this.order
-    )
-}
-
-private fun WorkoutExerciseEntity.toDomain(): WorkoutExercise {
-    return WorkoutExercise(
-        id = this.id,
-        workoutId = this.workoutId,
-        exerciseId = this.exerciseId,
-        order = this.order,
-        targetSets = this.targetSets
-    )
-}
-
-private fun WorkoutExercise.toEntity(): WorkoutExerciseEntity {
-    return WorkoutExerciseEntity(
-        id = this.id,
-        workoutId = this.workoutId,
-        exerciseId = this.exerciseId,
-        order = this.order,
-        targetSets = this.targetSets
-    )
 }
