@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.daniloscataloni.liftking.ui.screens.ExerciseListScreen
 import com.daniloscataloni.liftking.ui.screens.PeriodizationScreen
 import com.daniloscataloni.liftking.ui.screens.TrainingScreen
 import com.daniloscataloni.liftking.ui.screens.WorkoutListScreen
@@ -42,10 +41,6 @@ fun LiftKingNavHost(navController: NavHostController) {
                 onBackClick = { navController.popBackStack() },
                 onComplete = { navController.popBackStack() }
             )
-        }
-
-        composable<Route.ExerciseList> {
-            ExerciseListScreen()
         }
     }
 }

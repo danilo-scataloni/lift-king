@@ -9,9 +9,6 @@ sealed interface Route {
     data object Periodizations : Route
 
     @Serializable
-    data object ExerciseList : Route
-
-    @Serializable
     data class Workouts(val periodizationId: Long) : Route
 
     @Serializable

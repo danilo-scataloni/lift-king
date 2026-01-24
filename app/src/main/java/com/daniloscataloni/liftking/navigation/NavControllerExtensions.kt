@@ -9,7 +9,3 @@ fun NavController.navigateToWorkouts(periodizationId: Long) {
 fun NavController.navigateToTraining(workoutId: Long) {
     navigate(Route.Training(workoutId))
 }
-
-fun NavController.navigateToExerciseList() {
-    navigate(Route.ExerciseList)
-}

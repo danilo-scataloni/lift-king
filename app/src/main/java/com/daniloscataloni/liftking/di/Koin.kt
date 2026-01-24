@@ -10,8 +10,6 @@ import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
 import com.daniloscataloni.liftking.data.repositories.PeriodizationRepository
 import com.daniloscataloni.liftking.data.repositories.TrainingRepository
 import com.daniloscataloni.liftking.data.repositories.WorkoutRepository
-import com.daniloscataloni.liftking.ui.viewmodels.ExerciseCreationViewModel
-import com.daniloscataloni.liftking.ui.viewmodels.ExerciseListViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel
@@ -24,8 +22,6 @@ import org.koin.dsl.module
 val appModule = module {
 
     // ========== ViewModels ==========
-    viewModelOf(::ExerciseCreationViewModel)
-    viewModelOf(::ExerciseListViewModel)
     viewModelOf(::PeriodizationViewModel)
     viewModelOf(::TrainingViewModel)
     viewModelOf(::WorkoutListViewModel)
