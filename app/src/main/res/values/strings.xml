@@ -45,6 +45,9 @@
     <string name="dialog_exercise_remove_title">Remover exercício?</string>
     <string name="dialog_exercise_remove_message">O exercício \"%1$s\" será removido deste treino.</string>
 
+    <string name="dialog_workout_delete_title">Excluir treino?</string>
+    <string name="dialog_workout_delete_message">O treino \"%1$s\" será excluído permanentemente.</string>
+
     <string name="dialog_finish_title">Finalizar treino?</string>
     <string name="dialog_finish_message_empty">Nenhuma série foi registrada neste treino.</string>
 
