@@ -9,7 +9,7 @@ import com.daniloscataloni.liftking.data.repositories.ITrainingRepository
 import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
 import com.daniloscataloni.liftking.data.repositories.PeriodizationRepository
 import com.daniloscataloni.liftking.data.repositories.TrainingRepository
-import com.daniloscataloni.liftking.data.repositories.WorkoutRepository
+import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository.WorkoutRepository
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel

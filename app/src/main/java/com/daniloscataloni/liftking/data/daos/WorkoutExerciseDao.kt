@@ -47,4 +47,7 @@ interface WorkoutExerciseDao {
      */
     @Query("DELETE FROM workout_exercises WHERE workoutId = :workoutId AND exerciseId = :exerciseId")
     suspend fun removeExerciseFromWorkout(workoutId: Long, exerciseId: Int)
+
+    @Query("DELETE FROM workout_exercises WHERE id = :id")
+    suspend fun deleteWorkoutExerciseById(id: Long)
 }

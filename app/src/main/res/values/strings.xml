@@ -42,6 +42,9 @@
     <string name="dialog_set_delete_title">Excluir série?</string>
     <string name="dialog_set_delete_message">Essa ação não pode ser desfeita.</string>
 
+    <string name="dialog_exercise_remove_title">Remover exercício?</string>
+    <string name="dialog_exercise_remove_message">O exercício \"%1$s\" será removido deste treino.</string>
+
     <string name="dialog_finish_title">Finalizar treino?</string>
     <string name="dialog_finish_message_empty">Nenhuma série foi registrada neste treino.</string>
 
@@ -63,6 +66,7 @@
     <string name="button_add_set">Adicionar série</string>
     <string name="button_delete_set">Excluir série</string>
     <string name="button_create_exercise">Criar novo exercício</string>
+    <string name="content_desc_remove_exercise">Remover exercício</string>
 
     <!-- ==================== LABELS ==================== -->
 

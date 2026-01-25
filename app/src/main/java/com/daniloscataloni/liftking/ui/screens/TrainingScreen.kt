@@ -25,7 +25,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -245,7 +247,8 @@ fun TrainingScreen(
                     ExerciseCard(
                         exerciseWithSets = exerciseWithSets,
                         onAddSet = { showAddSetDialog = exerciseWithSets },
-                        onSetClick = { set -> viewModel.startEditingSet(set) }
+                        onSetClick = { set -> viewModel.startEditingSet(set) },
+                        onRemoveExercise = {viewModel.removeExerciseFromWorkout(exerciseWithSets.exercise.id) }
                     )
                 }
             }
@@ -257,8 +260,22 @@ fun TrainingScreen(
 private fun ExerciseCard(
     exerciseWithSets: ExerciseWithSets,
     onAddSet: () -> Unit,
-    onSetClick: (SetLog) -> Unit
+    onSetClick: (SetLog) -> Unit,
+    onRemoveExercise: () -> Unit
 ) {
+    var showRemoveConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showRemoveConfirmDialog) {
+        RemoveExerciseConfirmDialog(
+            exerciseName = exerciseWithSets.exercise.description,
+            onDismiss = { showRemoveConfirmDialog = false },
+            onConfirm = {
+                showRemoveConfirmDialog = false
+                onRemoveExercise()
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -270,17 +287,36 @@ private fun ExerciseCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = exerciseWithSets.exercise.description,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = exerciseWithSets.exercise.primaryMuscleGroup.toReadableString(),
-                style = MaterialTheme.typography.bodySmall,
-                color = SmoothGray
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = exerciseWithSets.exercise.description,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = exerciseWithSets.exercise.primaryMuscleGroup.toReadableString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SmoothGray
+                    )
+                }
+                IconButton(
+                    onClick = { showRemoveConfirmDialog = true },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.content_desc_remove_exercise),
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
 
             MediumSpacer()
 
@@ -964,6 +1000,49 @@ private fun MuscleGroupSelector(
                     else
                         MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RemoveExerciseConfirmDialog(
+    exerciseName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_remove_title))
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.dialog_exercise_remove_message, exerciseName),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SmoothGray,
+                    textAlign = TextAlign.Center
+                )
+
+                MediumSpacer()
+
+                DialogButtonRow(
+                    cancelText = stringResource(R.string.button_cancel),
+                    confirmText = stringResource(R.string.button_delete),
+                    onCancel = onDismiss,
+                    onConfirm = onConfirm
                 )
             }
         }

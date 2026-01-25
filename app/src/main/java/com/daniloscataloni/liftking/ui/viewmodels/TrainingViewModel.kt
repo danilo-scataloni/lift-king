@@ -249,4 +249,11 @@ class TrainingViewModel(
             loadWorkout(workoutId)
         }
     }
+
+    fun removeExerciseFromWorkout(exerciseId: Int) {
+        viewModelScope.launch {
+            workoutRepository.removeExerciseFromWorkout(workoutId, exerciseId)
+            loadWorkout(workoutId)
+        }
+    }
 }
