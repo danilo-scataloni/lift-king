@@ -17,6 +17,8 @@ composeMaterialIconsExtended = "1.7.6"
 junit5 = "5.10.2"
 mockk = "1.13.10"
 kotlinxSerialization = "1.6.3"
+reorderable = "2.4.3"
+coroutinesTest = "1.8.1"
 # Code Quality
 ktlint = "12.1.2"
 detekt = "1.23.7"
@@ -52,6 +54,8 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "composeMaterialIconsExtended" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

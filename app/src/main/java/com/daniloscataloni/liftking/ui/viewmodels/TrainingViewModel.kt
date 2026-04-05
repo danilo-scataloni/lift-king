@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class ExerciseWithSets(
@@ -46,6 +48,7 @@ class TrainingViewModel(
     val uiState: StateFlow<TrainingUiState> = _uiState.asStateFlow()
 
     private var workoutId: Long = 0
+    private var reorderJob: Job? = null
 
     fun loadWorkout(workoutId: Long) {
         this.workoutId = workoutId
@@ -251,9 +254,37 @@ class TrainingViewModel(
     }
 
     fun removeExerciseFromWorkout(exerciseId: Int) {
+        reorderJob?.cancel()
         viewModelScope.launch {
             workoutRepository.removeExerciseFromWorkout(workoutId, exerciseId)
             loadWorkout(workoutId)
         }
+    }
+
+    fun moveExercise(fromIndex: Int, toIndex: Int) {
+        val size = _uiState.value.exercises.size
+        if (fromIndex !in 0 until size || toIndex !in 0 until size) return
+
+        val currentList = _uiState.value.exercises.toMutableList()
+        val item = currentList.removeAt(fromIndex)
+        currentList.add(toIndex, item)
+
+        val reindexed = currentList.mapIndexed { index, exerciseWithSets ->
+            exerciseWithSets.copy(
+                workoutExercise = exerciseWithSets.workoutExercise.copy(order = index)
+            )
+        }
+
+        _uiState.value = _uiState.value.copy(exercises = reindexed)
+
+        reorderJob?.cancel()
+        reorderJob = viewModelScope.launch {
+            delay(500)
+            workoutRepository.reorderExercises(reindexed.map { it.workoutExercise })
+        }
+    }
+
+    internal fun seedExercisesForTest(exercises: List<ExerciseWithSets>) {
+        _uiState.value = _uiState.value.copy(exercises = exercises, isLoading = false)
     }
 }

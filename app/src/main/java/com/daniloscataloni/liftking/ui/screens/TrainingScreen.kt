@@ -16,8 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -236,20 +243,51 @@ fun TrainingScreen(
                 )
             }
         } else {
+            val lazyListState = rememberLazyListState()
+            val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                viewModel.moveExercise(fromIndex = from.index, toIndex = to.index)
+            }
+
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(uiState.exercises) { exerciseWithSets ->
-                    ExerciseCard(
-                        exerciseWithSets = exerciseWithSets,
-                        onAddSet = { showAddSetDialog = exerciseWithSets },
-                        onSetClick = { set -> viewModel.startEditingSet(set) },
-                        onRemoveExercise = {viewModel.removeExerciseFromWorkout(exerciseWithSets.exercise.id) }
-                    )
+                items(
+                    items = uiState.exercises,
+                    key = { it.workoutExercise.id },
+                ) { exerciseWithSets ->
+                    ReorderableItem(reorderableState, key = exerciseWithSets.workoutExercise.id) { isDragging ->
+                        val scale by animateFloatAsState(
+                            targetValue = if (isDragging) 1.05f else 1f,
+                            label = "dragScale",
+                        )
+                        val elevation by animateDpAsState(
+                            targetValue = if (isDragging) 8.dp else 0.dp,
+                            label = "dragElevation",
+                        )
+                        val density = LocalDensity.current
+                        val elevationPx = with(density) { elevation.toPx() }
+
+                        ExerciseCard(
+                            exerciseWithSets = exerciseWithSets,
+                            onAddSet = { showAddSetDialog = exerciseWithSets },
+                            onSetClick = { set -> viewModel.startEditingSet(set) },
+                            onRemoveExercise = {
+                                viewModel.removeExerciseFromWorkout(exerciseWithSets.exercise.id)
+                            },
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                    shadowElevation = elevationPx
+                                }
+                                .longPressDraggableHandle(),
+                        )
+                    }
                 }
             }
         }
@@ -261,7 +299,8 @@ private fun ExerciseCard(
     exerciseWithSets: ExerciseWithSets,
     onAddSet: () -> Unit,
     onSetClick: (SetLog) -> Unit,
-    onRemoveExercise: () -> Unit
+    onRemoveExercise: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var showRemoveConfirmDialog by remember { mutableStateOf(false) }
 
@@ -277,7 +316,7 @@ private fun ExerciseCard(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = BackgroundGray),
         border = BorderStroke(1.dp, BorderGray)
