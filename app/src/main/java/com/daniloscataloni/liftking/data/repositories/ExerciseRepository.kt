@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.map
 interface IExerciseRepository {
     suspend fun insertExercise(exercise: Exercise): Long
     fun getAllExercises(): Flow<List<Exercise>>
+    suspend fun deleteExercise(exercise: Exercise)
 }
 
 
@@ -27,5 +28,9 @@ class ExerciseRepository(
             .map { exerciseEntities ->
                 exerciseEntities.map { it.toDomain() }
             }
+    }
+
+    override suspend fun deleteExercise(exercise: Exercise) {
+        exerciseDao.deleteExercise(exercise.toEntity())
     }
 }

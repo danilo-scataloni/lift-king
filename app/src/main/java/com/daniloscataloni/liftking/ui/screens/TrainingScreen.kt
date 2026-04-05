@@ -2,7 +2,9 @@ package com.daniloscataloni.liftking.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -185,7 +187,10 @@ fun TrainingScreen(
                 exercises = uiState.availableExercises,
                 onDismiss = { viewModel.hideAddExerciseDialog() },
                 onSelect = { exercise -> viewModel.addExerciseToWorkout(exercise) },
-                onCreateNew = { viewModel.showCreateExerciseDialog() }
+                onCreateNew = { viewModel.showCreateExerciseDialog() },
+                onDelete = { exercise -> viewModel.deleteExercise(exercise) },
+                deleteError = uiState.deleteExerciseError,
+                onDeleteErrorDismiss = { viewModel.clearDeleteExerciseError() }
             )
         }
 
@@ -821,14 +826,30 @@ private fun FinishWorkoutDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun AddExerciseDialog(
     exercises: List<Exercise>,
     onDismiss: () -> Unit,
     onSelect: (Exercise) -> Unit,
-    onCreateNew: () -> Unit
+    onCreateNew: () -> Unit,
+    onDelete: (Exercise) -> Unit,
+    deleteError: Boolean = false,
+    onDeleteErrorDismiss: () -> Unit = {}
 ) {
+    var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) }
+
+    exerciseToDelete?.let { exercise ->
+        DeleteExerciseFromLibraryConfirmDialog(
+            exerciseName = exercise.description,
+            onDismiss = { exerciseToDelete = null },
+            onConfirm = {
+                onDelete(exercise)
+                exerciseToDelete = null
+            }
+        )
+    }
+
     BasicAlertDialog(onDismissRequest = onDismiss) {
         Surface(
             modifier = Modifier
@@ -842,6 +863,19 @@ private fun AddExerciseDialog(
             ) {
                 LiftKingHeading(text = stringResource(R.string.dialog_exercise_add_title))
                 MediumSpacer()
+
+                if (deleteError) {
+                    Text(
+                        text = stringResource(R.string.dialog_exercise_delete_error),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onDeleteErrorDismiss() }
+                    )
+                    SmallSpacer()
+                }
 
                 // Botão para criar novo exercício
                 TextButton(
@@ -885,7 +919,10 @@ private fun AddExerciseDialog(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { onSelect(exercise) },
+                                    .combinedClickable(
+                                        onClick = { onSelect(exercise) },
+                                        onLongClick = { exerciseToDelete = exercise }
+                                    ),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = CardDefaults.cardColors(containerColor = BackgroundGray),
                                 border = BorderStroke(1.dp, BorderGray)
@@ -1039,6 +1076,49 @@ private fun MuscleGroupSelector(
                     else
                         MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DeleteExerciseFromLibraryConfirmDialog(
+    exerciseName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_delete_title))
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.dialog_exercise_delete_message, exerciseName),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SmoothGray,
+                    textAlign = TextAlign.Center
+                )
+
+                MediumSpacer()
+
+                DialogButtonRow(
+                    cancelText = stringResource(R.string.button_cancel),
+                    confirmText = stringResource(R.string.button_delete),
+                    onCancel = onDismiss,
+                    onConfirm = onConfirm
                 )
             }
         }

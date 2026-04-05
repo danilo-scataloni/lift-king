@@ -45,6 +45,10 @@
     <string name="dialog_exercise_remove_title">Remover exercício?</string>
     <string name="dialog_exercise_remove_message">O exercício \"%1$s\" será removido deste treino.</string>
 
+    <string name="dialog_exercise_delete_title">Excluir exercício?</string>
+    <string name="dialog_exercise_delete_message">O exercício \"%1$s\" será excluído permanentemente da biblioteca.</string>
+    <string name="dialog_exercise_delete_error">Não é possível excluir: este exercício está em uso em um treino.</string>
+
     <string name="dialog_workout_delete_title">Excluir treino?</string>
     <string name="dialog_workout_delete_message">O treino \"%1$s\" será excluído permanentemente.</string>
 

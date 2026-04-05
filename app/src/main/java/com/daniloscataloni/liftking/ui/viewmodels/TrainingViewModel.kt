@@ -35,7 +35,8 @@ data class TrainingUiState(
     val newExerciseName: String = "",
     val newExercisePrimaryMuscle: MuscleGroup = MuscleGroup.CHEST,
     val newExerciseSecondaryMuscle: MuscleGroup? = null,
-    val editingSet: SetLog? = null
+    val editingSet: SetLog? = null,
+    val deleteExerciseError: Boolean = false
 )
 
 class TrainingViewModel(
@@ -251,6 +252,24 @@ class TrainingViewModel(
             _uiState.value = _uiState.value.copy(editingSet = null)
             loadWorkout(workoutId)
         }
+    }
+
+    fun deleteExercise(exercise: Exercise) {
+        viewModelScope.launch {
+            try {
+                exerciseRepository.deleteExercise(exercise)
+                val exerciseIdsInWorkout = _uiState.value.exercises.map { it.exercise.id }.toSet()
+                val updated = exerciseRepository.getAllExercises().first()
+                    .filter { it.id !in exerciseIdsInWorkout }
+                _uiState.value = _uiState.value.copy(availableExercises = updated)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(deleteExerciseError = true)
+            }
+        }
+    }
+
+    fun clearDeleteExerciseError() {
+        _uiState.value = _uiState.value.copy(deleteExerciseError = false)
     }
 
     fun removeExerciseFromWorkout(exerciseId: Int) {
