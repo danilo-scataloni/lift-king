@@ -1,7 +1,8 @@
 package com.daniloscataloni.liftking.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,10 +30,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniloscataloni.liftking.R
@@ -43,6 +48,7 @@ import com.daniloscataloni.liftking.ui.components.LiftKingTextField
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
+import com.daniloscataloni.liftking.ui.theme.SmoothGray
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,6 +61,18 @@ fun PeriodizationScreen(
     val activePeriodization by viewModel.activePeriodization.collectAsState()
     val showDialog by viewModel.showCreateDialog.collectAsState()
     val newName by viewModel.newPeriodizationName.collectAsState()
+    var periodizationToDelete by remember { mutableStateOf<Periodization?>(null) }
+
+    periodizationToDelete?.let { periodization ->
+        DeletePeriodizationConfirmDialog(
+            periodizationName = periodization.name,
+            onDismiss = { periodizationToDelete = null },
+            onConfirm = {
+                viewModel.deletePeriodization(periodization)
+                periodizationToDelete = null
+            }
+        )
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -126,7 +144,8 @@ fun PeriodizationScreen(
                         onClick = {
                             viewModel.setActive(periodization)
                             onPeriodizationSelected(periodization)
-                        }
+                        },
+                        onLongClick = { periodizationToDelete = periodization }
                     )
                 }
             }
@@ -134,16 +153,18 @@ fun PeriodizationScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PeriodizationCard(
     periodization: Periodization,
     isActive: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isActive)
@@ -172,6 +193,45 @@ private fun PeriodizationCard(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(R.string.content_desc_active),
                     tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DeletePeriodizationConfirmDialog(
+    periodizationName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_periodization_delete_title))
+                MediumSpacer()
+                Text(
+                    text = stringResource(R.string.dialog_periodization_delete_message, periodizationName),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SmoothGray,
+                    textAlign = TextAlign.Center
+                )
+                MediumSpacer()
+                DialogButtonRow(
+                    cancelText = stringResource(R.string.button_cancel),
+                    confirmText = stringResource(R.string.button_delete),
+                    onCancel = onDismiss,
+                    onConfirm = onConfirm
                 )
             }
         }

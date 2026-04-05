@@ -62,4 +62,10 @@ class PeriodizationViewModel(
             repository.archive(periodization.id)
         }
     }
+
+    fun deletePeriodization(periodization: Periodization) {
+        viewModelScope.launch {
+            repository.delete(periodization)
+        }
+    }
 }
