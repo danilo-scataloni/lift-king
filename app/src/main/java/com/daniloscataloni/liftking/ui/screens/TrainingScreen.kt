@@ -51,6 +51,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -71,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.domain.models.Exercise
 import com.daniloscataloni.liftking.domain.models.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.WeightUnit
 import com.daniloscataloni.liftking.domain.models.SetLog
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
@@ -170,6 +175,7 @@ fun TrainingScreen(
         showAddSetDialog?.let { exerciseWithSets ->
             AddSetDialog(
                 exerciseName = exerciseWithSets.exercise.description,
+                weightUnit = exerciseWithSets.exercise.weightUnit,
                 onDismiss = { showAddSetDialog = null },
                 onConfirm = { weight, reps, rir ->
                     viewModel.logSet(
@@ -199,9 +205,11 @@ fun TrainingScreen(
                 exerciseName = uiState.newExerciseName,
                 primaryMuscle = uiState.newExercisePrimaryMuscle,
                 secondaryMuscle = uiState.newExerciseSecondaryMuscle,
+                weightUnit = uiState.newExerciseWeightUnit,
                 onNameChange = { viewModel.onNewExerciseNameChange(it) },
                 onPrimaryMuscleChange = { viewModel.onNewExercisePrimaryMuscleChange(it) },
                 onSecondaryMuscleChange = { viewModel.onNewExerciseSecondaryMuscleChange(it) },
+                onWeightUnitChange = { viewModel.onNewExerciseWeightUnitChange(it) },
                 onDismiss = { viewModel.hideCreateExerciseDialog() },
                 onConfirm = { viewModel.createExerciseAndAddToWorkout() }
             )
@@ -210,6 +218,7 @@ fun TrainingScreen(
         uiState.editingSet?.let { set ->
             EditSetDialog(
                 set = set,
+                weightUnit = uiState.editingSetWeightUnit,
                 onDismiss = { viewModel.cancelEditingSet() },
                 onConfirm = { weight, reps, rir -> viewModel.updateSet(weight, reps, rir) },
                 onDelete = { viewModel.deleteSet() }
@@ -372,7 +381,7 @@ private fun ExerciseCard(
             )
             SmallSpacer()
 
-            SetTableHeader()
+            SetTableHeader(weightUnit = exerciseWithSets.exercise.weightUnit)
 
             if (exerciseWithSets.lastSets.isEmpty()) {
                 Text(
@@ -383,7 +392,11 @@ private fun ExerciseCard(
                 )
             } else {
                 exerciseWithSets.lastSets.forEach { set ->
-                    SetRow(set = set, isCurrentSession = false)
+                    SetRow(
+                        set = set,
+                        weightUnit = exerciseWithSets.exercise.weightUnit,
+                        isCurrentSession = false
+                    )
                 }
             }
 
@@ -405,10 +418,11 @@ private fun ExerciseCard(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             } else {
-                SetTableHeader()
+                SetTableHeader(weightUnit = exerciseWithSets.exercise.weightUnit)
                 exerciseWithSets.currentSets.forEach { set ->
                     SetRow(
                         set = set,
+                        weightUnit = exerciseWithSets.exercise.weightUnit,
                         isCurrentSession = true,
                         onClick = { onSetClick(set) }
                     )
@@ -438,7 +452,7 @@ private fun ExerciseCard(
 }
 
 @Composable
-private fun SetTableHeader() {
+private fun SetTableHeader(weightUnit: WeightUnit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -450,7 +464,7 @@ private fun SetTableHeader() {
             modifier = Modifier.width(50.dp)
         )
         Text(
-            text = stringResource(R.string.table_header_weight),
+            text = "${stringResource(R.string.table_header_weight)} (${weightUnit.shortLabel})",
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(60.dp),
@@ -476,6 +490,7 @@ private fun SetTableHeader() {
 @Composable
 private fun SetRow(
     set: SetLog,
+    weightUnit: WeightUnit,
     isCurrentSession: Boolean = false,
     onClick: (() -> Unit)? = null
 ) {
@@ -507,7 +522,7 @@ private fun SetRow(
             modifier = Modifier.width(50.dp)
         )
         Text(
-            text = "${set.weight}kg",
+            text = "${set.weight} ${weightUnit.shortLabel}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isCurrentSession) FontWeight.SemiBold else FontWeight.Normal,
             color = textColor,
@@ -537,6 +552,7 @@ private fun SetRow(
 @Composable
 private fun AddSetDialog(
     exerciseName: String,
+    weightUnit: WeightUnit,
     onDismiss: () -> Unit,
     onConfirm: (weight: Float, reps: Int, rir: Int?) -> Unit
 ) {
@@ -574,7 +590,7 @@ private fun AddSetDialog(
                     OutlinedTextField(
                         value = weight,
                         onValueChange = { weight = it },
-                        label = { Text(stringResource(R.string.label_weight_kg)) },
+                        label = { Text("${stringResource(R.string.label_weight)} (${weightUnit.shortLabel})") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -627,6 +643,7 @@ private fun AddSetDialog(
 @Composable
 private fun EditSetDialog(
     set: SetLog,
+    weightUnit: WeightUnit,
     onDismiss: () -> Unit,
     onConfirm: (weight: Float, reps: Int, rir: Int?) -> Unit,
     onDelete: () -> Unit
@@ -695,7 +712,7 @@ private fun EditSetDialog(
                         OutlinedTextField(
                             value = weight,
                             onValueChange = { weight = it },
-                            label = { Text(stringResource(R.string.label_weight_kg)) },
+                            label = { Text("${stringResource(R.string.label_weight)} (${weightUnit.shortLabel})") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -936,7 +953,7 @@ private fun AddExerciseDialog(
                                         color = MaterialTheme.colorScheme.onBackground
                                     )
                                     Text(
-                                        text = exercise.primaryMuscleGroup.toReadableString(),
+                                        text = "${exercise.primaryMuscleGroup.toReadableString()} · ${exercise.weightUnit.shortLabel}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = SmoothGray
                                     )
@@ -956,9 +973,11 @@ private fun CreateExerciseDialog(
     exerciseName: String,
     primaryMuscle: MuscleGroup,
     secondaryMuscle: MuscleGroup?,
+    weightUnit: WeightUnit,
     onNameChange: (String) -> Unit,
     onPrimaryMuscleChange: (MuscleGroup) -> Unit,
     onSecondaryMuscleChange: (MuscleGroup?) -> Unit,
+    onWeightUnitChange: (WeightUnit) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -1024,6 +1043,47 @@ private fun CreateExerciseDialog(
                     excludeMuscle = primaryMuscle,
                     allowNull = true
                 )
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.label_weight_unit),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SmoothGray
+                )
+                SmallSpacer()
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    WeightUnit.entries.forEachIndexed { index, unit ->
+                        SegmentedButton(
+                            selected = unit == weightUnit,
+                            onClick = { onWeightUnitChange(unit) },
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = WeightUnit.entries.size
+                            ),
+                            icon = {},
+                            label = {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (unit == weightUnit) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = unit.displayLabel,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
 
                 MediumSpacer()
 

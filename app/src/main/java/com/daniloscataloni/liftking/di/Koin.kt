@@ -48,7 +48,7 @@ val appModule = module {
             LiftKingDatabase::class.java,
             "lift-king-database"
         )
-            .addMigrations(LiftKingDatabase.MIGRATION_1_2)
+            .addMigrations(LiftKingDatabase.MIGRATION_1_2, LiftKingDatabase.MIGRATION_2_3)
             .build()
     }
 }

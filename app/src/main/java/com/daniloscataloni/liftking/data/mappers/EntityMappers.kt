@@ -20,7 +20,8 @@ fun ExerciseEntity.toDomain(): Exercise {
         id = this.id,
         description = this.description,
         primaryMuscleGroup = this.primaryMuscleGroup,
-        secondaryMuscleGroups = this.secondaryMuscleGroups
+        secondaryMuscleGroups = this.secondaryMuscleGroups,
+        weightUnit = this.weightUnit
     )
 }
 
@@ -29,7 +30,8 @@ fun Exercise.toEntity(): ExerciseEntity {
         id = this.id,
         description = this.description,
         primaryMuscleGroup = this.primaryMuscleGroup,
-        secondaryMuscleGroups = this.secondaryMuscleGroups
+        secondaryMuscleGroups = this.secondaryMuscleGroups,
+        weightUnit = this.weightUnit
     )
 }
 

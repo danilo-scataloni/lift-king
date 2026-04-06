@@ -85,7 +85,8 @@
     <string name="label_muscle_groups">Grupos Musculares</string>
     <string name="label_muscle_group_main">Grupo muscular principal</string>
     <string name="label_muscle_group_auxiliary">Grupo muscular auxiliar</string>
-    <string name="label_weight_kg">Peso (kg)</string>
+    <string name="label_weight">Peso</string>
+    <string name="label_weight_unit">Unidade de peso</string>
     <string name="label_reps">Reps</string>
     <string name="label_rir">RIR</string>
     <string name="label_failure">Falha</string>

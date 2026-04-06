@@ -2,8 +2,8 @@ package com.daniloscataloni.liftking.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.daniloscataloni.liftking.domain.models.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.WeightUnit
 
 @Entity(tableName = "exercises")
 data class ExerciseEntity(
@@ -12,4 +12,5 @@ data class ExerciseEntity(
     val description: String,
     val primaryMuscleGroup: MuscleGroup,
     val secondaryMuscleGroups: MuscleGroup?,
+    val weightUnit: WeightUnit = WeightUnit.KG,
 )

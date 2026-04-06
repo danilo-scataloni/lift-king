@@ -1,10 +1,11 @@
 package com.daniloscataloni.liftking.domain.models
 
-data class Exercise (
+data class Exercise(
     val id: Int,
     val description: String,
     val primaryMuscleGroup: MuscleGroup,
-    val secondaryMuscleGroups: MuscleGroup?
+    val secondaryMuscleGroups: MuscleGroup?,
+    val weightUnit: WeightUnit = WeightUnit.KG
 )
 
 enum class MuscleGroup {

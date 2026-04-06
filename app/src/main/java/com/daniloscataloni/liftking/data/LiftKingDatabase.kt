@@ -37,7 +37,7 @@ import com.daniloscataloni.liftking.data.entities.WorkoutExerciseEntity
         ExerciseLogEntity::class,
         SetLogEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class LiftKingDatabase : RoomDatabase() {
@@ -139,6 +139,19 @@ abstract class LiftKingDatabase : RoomDatabase() {
                     )
                 """)
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_set_logs_exerciseLogId ON set_logs(exerciseLogId)")
+            }
+        }
+
+        /**
+         * Migração da versão 2 para 3.
+         * Adiciona a coluna weightUnit à tabela exercises.
+         * Exercícios existentes recebem o valor padrão 'KG'.
+         */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE exercises ADD COLUMN weightUnit TEXT NOT NULL DEFAULT 'KG'"
+                )
             }
         }
     }

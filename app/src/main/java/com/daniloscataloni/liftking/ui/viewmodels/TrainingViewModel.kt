@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.daniloscataloni.liftking.domain.models.Exercise
 import com.daniloscataloni.liftking.domain.models.MuscleGroup
 import com.daniloscataloni.liftking.domain.models.SetLog
+import com.daniloscataloni.liftking.domain.models.WeightUnit
 import com.daniloscataloni.liftking.domain.models.WorkoutExercise
 import com.daniloscataloni.liftking.data.repositories.IExerciseRepository
 import com.daniloscataloni.liftking.data.repositories.ITrainingRepository
@@ -35,7 +36,9 @@ data class TrainingUiState(
     val newExerciseName: String = "",
     val newExercisePrimaryMuscle: MuscleGroup = MuscleGroup.CHEST,
     val newExerciseSecondaryMuscle: MuscleGroup? = null,
+    val newExerciseWeightUnit: WeightUnit = WeightUnit.KG,
     val editingSet: SetLog? = null,
+    val editingSetWeightUnit: WeightUnit = WeightUnit.KG,
     val deleteExerciseError: Boolean = false
 )
 
@@ -118,7 +121,8 @@ class TrainingViewModel(
             showAddExerciseDialog = false,
             newExerciseName = "",
             newExercisePrimaryMuscle = MuscleGroup.CHEST,
-            newExerciseSecondaryMuscle = null
+            newExerciseSecondaryMuscle = null,
+            newExerciseWeightUnit = WeightUnit.KG
         )
     }
 
@@ -140,6 +144,10 @@ class TrainingViewModel(
         _uiState.value = _uiState.value.copy(newExerciseSecondaryMuscle = muscle)
     }
 
+    fun onNewExerciseWeightUnitChange(unit: WeightUnit) {
+        _uiState.value = _uiState.value.copy(newExerciseWeightUnit = unit)
+    }
+
     fun createExerciseAndAddToWorkout() {
         val name = _uiState.value.newExerciseName
         if (name.isBlank()) return
@@ -149,7 +157,8 @@ class TrainingViewModel(
                 id = 0,
                 description = name,
                 primaryMuscleGroup = _uiState.value.newExercisePrimaryMuscle,
-                secondaryMuscleGroups = _uiState.value.newExerciseSecondaryMuscle
+                secondaryMuscleGroups = _uiState.value.newExerciseSecondaryMuscle,
+                weightUnit = _uiState.value.newExerciseWeightUnit
             )
             val newId = exerciseRepository.insertExercise(exercise)
 
@@ -221,11 +230,14 @@ class TrainingViewModel(
     }
 
     fun startEditingSet(set: SetLog) {
-        _uiState.value = _uiState.value.copy(editingSet = set)
+        val unit = _uiState.value.exercises
+            .find { exerciseWithSets -> exerciseWithSets.currentSets.any { it.id == set.id } }
+            ?.exercise?.weightUnit ?: WeightUnit.KG
+        _uiState.value = _uiState.value.copy(editingSet = set, editingSetWeightUnit = unit)
     }
 
     fun cancelEditingSet() {
-        _uiState.value = _uiState.value.copy(editingSet = null)
+        _uiState.value = _uiState.value.copy(editingSet = null, editingSetWeightUnit = WeightUnit.KG)
     }
 
     fun updateSet(weight: Float, reps: Int, rir: Int?) {
@@ -239,7 +251,7 @@ class TrainingViewModel(
                     rir = rir
                 )
             )
-            _uiState.value = _uiState.value.copy(editingSet = null)
+            _uiState.value = _uiState.value.copy(editingSet = null, editingSetWeightUnit = WeightUnit.KG)
             loadWorkout(workoutId)
         }
     }
@@ -249,7 +261,7 @@ class TrainingViewModel(
 
         viewModelScope.launch {
             trainingRepository.deleteSet(setToDelete)
-            _uiState.value = _uiState.value.copy(editingSet = null)
+            _uiState.value = _uiState.value.copy(editingSet = null, editingSetWeightUnit = WeightUnit.KG)
             loadWorkout(workoutId)
         }
     }
