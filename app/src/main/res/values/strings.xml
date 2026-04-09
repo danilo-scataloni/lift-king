@@ -29,14 +29,17 @@
 
     <string name="dialog_periodization_create_title">Nova Periodização</string>
     <string name="dialog_periodization_create_placeholder">Ex: Hipertrofia 2024</string>
+    <string name="dialog_periodization_edit_title">Renomear Periodização</string>
     <string name="dialog_periodization_delete_title">Excluir periodização?</string>
     <string name="dialog_periodization_delete_message">A periodização \"%1$s\" e todos os seus treinos serão excluídos permanentemente.</string>
 
     <string name="dialog_workout_create_title">Novo Treino</string>
     <string name="dialog_workout_create_placeholder">Ex: Treino A - Peito</string>
+    <string name="dialog_workout_edit_title">Renomear Treino</string>
 
     <string name="dialog_exercise_add_title">Adicionar Exercício</string>
     <string name="dialog_exercise_create_title">Criar Exercício</string>
+    <string name="dialog_exercise_edit_title">Editar Exercício</string>
     <string name="dialog_exercise_empty">Nenhum exercício cadastrado ainda.</string>
 
     <string name="dialog_set_add_title">Nova Série</string>

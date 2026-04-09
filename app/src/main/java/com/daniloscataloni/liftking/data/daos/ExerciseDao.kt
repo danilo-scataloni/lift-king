@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.daniloscataloni.liftking.data.entities.ExerciseEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +19,9 @@ interface ExerciseDao {
 
     @Query("SELECT * FROM exercises WHERE id = :exerciseId")
     suspend fun getExerciseById(exerciseId: Int): ExerciseEntity?
+
+    @Update
+    suspend fun updateExercise(exercise: ExerciseEntity)
 
     @Delete
     suspend fun deleteExercise(exercise: ExerciseEntity)

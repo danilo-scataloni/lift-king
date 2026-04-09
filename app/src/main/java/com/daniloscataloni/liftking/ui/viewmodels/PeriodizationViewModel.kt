@@ -27,6 +27,15 @@ class PeriodizationViewModel(
     private val _newPeriodizationName = MutableStateFlow("")
     val newPeriodizationName: StateFlow<String> = _newPeriodizationName.asStateFlow()
 
+    private val _showEditDialog = MutableStateFlow(false)
+    val showEditDialog: StateFlow<Boolean> = _showEditDialog.asStateFlow()
+
+    private val _periodizationToEdit = MutableStateFlow<Periodization?>(null)
+    val periodizationToEdit: StateFlow<Periodization?> = _periodizationToEdit.asStateFlow()
+
+    private val _editPeriodizationName = MutableStateFlow("")
+    val editPeriodizationName: StateFlow<String> = _editPeriodizationName.asStateFlow()
+
     fun onShowCreateDialog() {
         _showCreateDialog.value = true
     }
@@ -48,6 +57,32 @@ class PeriodizationViewModel(
                 repository.setActive(id)
                 onDismissCreateDialog()
             }
+        }
+    }
+
+    fun onShowEditDialog(periodization: Periodization) {
+        _periodizationToEdit.value = periodization
+        _editPeriodizationName.value = periodization.name
+        _showEditDialog.value = true
+    }
+
+    fun onDismissEditDialog() {
+        _showEditDialog.value = false
+        _periodizationToEdit.value = null
+        _editPeriodizationName.value = ""
+    }
+
+    fun onEditNameChange(name: String) {
+        _editPeriodizationName.value = name
+    }
+
+    fun confirmEditPeriodization() {
+        val current = _periodizationToEdit.value ?: return
+        val name = _editPeriodizationName.value.trim()
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            repository.update(current.copy(name = name))
+            onDismissEditDialog()
         }
     }
 

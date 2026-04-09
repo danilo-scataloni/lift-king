@@ -3,7 +3,9 @@ package com.daniloscataloni.liftking.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +57,7 @@ import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.LiftKingTextField
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
+import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.theme.SmoothGray
@@ -76,7 +79,10 @@ fun WorkoutListScreen(
     val periodization by viewModel.periodizationName.collectAsState()
     val showDialog by viewModel.showCreateDialog.collectAsState()
     val newName by viewModel.newWorkoutName.collectAsState()
+    val showEditDialog by viewModel.showEditDialog.collectAsState()
+    val editName by viewModel.editWorkoutName.collectAsState()
     var workoutToDelete by remember { mutableStateOf<Workout?>(null) }
+    var currentSwipedId by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -136,6 +142,15 @@ fun WorkoutListScreen(
             )
         }
 
+        if (showEditDialog) {
+            EditWorkoutDialog(
+                name = editName,
+                onNameChange = { viewModel.onEditNameChange(it) },
+                onDismiss = { viewModel.onDismissEditDialog() },
+                onConfirm = { viewModel.confirmEditWorkout() }
+            )
+        }
+
         workoutToDelete?.let { workout ->
             DeleteWorkoutConfirmDialog(
                 workoutName = workout.name,
@@ -171,15 +186,36 @@ fun WorkoutListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { currentSwipedId = null },
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(workouts) { workout ->
-                    WorkoutCard(
-                        workout = workout,
-                        onClick = { onWorkoutClick(workout) },
-                        onLongClick = { workoutToDelete = workout }
-                    )
+                items(workouts, key = { it.id }) { workout ->
+                    SwipeToRevealEditBox(
+                        isRevealed = currentSwipedId == workout.id,
+                        onRevealStateChange = { revealed ->
+                            currentSwipedId = if (revealed) workout.id else null
+                        },
+                        onEditClick = {
+                            currentSwipedId = null
+                            viewModel.onShowEditDialog(workout)
+                        }
+                    ) {
+                        WorkoutCard(
+                            workout = workout,
+                            onClick = {
+                                currentSwipedId = null
+                                onWorkoutClick(workout)
+                            },
+                            onLongClick = {
+                                currentSwipedId = null
+                                workoutToDelete = workout
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -269,6 +305,45 @@ private fun CreateWorkoutDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LiftKingHeading(text = stringResource(R.string.dialog_workout_create_title))
+                MediumSpacer()
+                LiftKingTextField(
+                    value = name,
+                    onValueChange = onNameChange,
+                    placeholder = stringResource(R.string.dialog_workout_create_placeholder)
+                )
+                MediumSpacer()
+                DialogButtonRow(
+                    onCancel = onDismiss,
+                    onConfirm = { if (name.isNotBlank()) onConfirm() }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditWorkoutDialog(
+    name: String,
+    onNameChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_workout_edit_title))
                 MediumSpacer()
                 LiftKingTextField(
                     value = name,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,6 +82,7 @@ import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
 import com.daniloscataloni.liftking.ui.components.SmallSpacer
+import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
 import com.daniloscataloni.liftking.ui.extensions.toReadableString
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
@@ -195,8 +197,24 @@ fun TrainingScreen(
                 onSelect = { exercise -> viewModel.addExerciseToWorkout(exercise) },
                 onCreateNew = { viewModel.showCreateExerciseDialog() },
                 onDelete = { exercise -> viewModel.deleteExercise(exercise) },
+                onEdit = { exercise -> viewModel.onShowEditExerciseDialog(exercise) },
                 deleteError = uiState.deleteExerciseError,
                 onDeleteErrorDismiss = { viewModel.clearDeleteExerciseError() }
+            )
+        }
+
+        if (uiState.showEditExerciseDialog) {
+            EditExerciseDialog(
+                exerciseName = uiState.editExerciseName,
+                primaryMuscle = uiState.editExercisePrimaryMuscle,
+                secondaryMuscle = uiState.editExerciseSecondaryMuscle,
+                weightUnit = uiState.editExerciseWeightUnit,
+                onNameChange = { viewModel.onEditExerciseNameChange(it) },
+                onPrimaryMuscleChange = { viewModel.onEditExercisePrimaryMuscleChange(it) },
+                onSecondaryMuscleChange = { viewModel.onEditExerciseSecondaryMuscleChange(it) },
+                onWeightUnitChange = { viewModel.onEditExerciseWeightUnitChange(it) },
+                onDismiss = { viewModel.onDismissEditExerciseDialog() },
+                onConfirm = { viewModel.confirmEditExercise() }
             )
         }
 
@@ -851,10 +869,12 @@ private fun AddExerciseDialog(
     onSelect: (Exercise) -> Unit,
     onCreateNew: () -> Unit,
     onDelete: (Exercise) -> Unit,
+    onEdit: (Exercise) -> Unit,
     deleteError: Boolean = false,
     onDeleteErrorDismiss: () -> Unit = {}
 ) {
     var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) }
+    var currentSwipedId by remember { mutableStateOf<Int?>(null) }
 
     exerciseToDelete?.let { exercise ->
         DeleteExerciseFromLibraryConfirmDialog(
@@ -929,34 +949,57 @@ private fun AddExerciseDialog(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.height(300.dp),
+                        modifier = Modifier
+                            .height(300.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                            ) { currentSwipedId = null },
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(exercises) { exercise ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = { onSelect(exercise) },
-                                        onLongClick = { exerciseToDelete = exercise }
-                                    ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = CardDefaults.cardColors(containerColor = BackgroundGray),
-                                border = BorderStroke(1.dp, BorderGray)
+                        items(exercises, key = { it.id }) { exercise ->
+                            SwipeToRevealEditBox(
+                                isRevealed = currentSwipedId == exercise.id,
+                                cornerRadius = 8.dp,
+                                onRevealStateChange = { revealed ->
+                                    currentSwipedId = if (revealed) exercise.id else null
+                                },
+                                onEditClick = {
+                                    currentSwipedId = null
+                                    onEdit(exercise)
+                                }
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(12.dp)
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                currentSwipedId = null
+                                                onSelect(exercise)
+                                            },
+                                            onLongClick = {
+                                                currentSwipedId = null
+                                                exerciseToDelete = exercise
+                                            }
+                                        ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = CardDefaults.cardColors(containerColor = BackgroundGray),
+                                    border = BorderStroke(1.dp, BorderGray)
                                 ) {
-                                    Text(
-                                        text = exercise.description,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                    Text(
-                                        text = "${exercise.primaryMuscleGroup.toReadableString()} · ${exercise.weightUnit.shortLabel}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = SmoothGray
-                                    )
+                                    Column(
+                                        modifier = Modifier.padding(12.dp)
+                                    ) {
+                                        Text(
+                                            text = exercise.description,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                        Text(
+                                            text = "${exercise.primaryMuscleGroup.toReadableString()} · ${exercise.weightUnit.shortLabel}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = SmoothGray
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -1025,6 +1068,134 @@ private fun CreateExerciseDialog(
                 MediumSpacer()
 
                 // Seletor de grupo muscular secundário
+                Text(
+                    text = stringResource(R.string.label_muscle_group_secondary),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SmoothGray
+                )
+                SmallSpacer()
+                MuscleGroupSelector(
+                    selectedMuscle = secondaryMuscle,
+                    onSelect = { muscle ->
+                        if (muscle == secondaryMuscle) {
+                            onSecondaryMuscleChange(null)
+                        } else {
+                            onSecondaryMuscleChange(muscle)
+                        }
+                    },
+                    excludeMuscle = primaryMuscle,
+                    allowNull = true
+                )
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.label_weight_unit),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SmoothGray
+                )
+                SmallSpacer()
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    WeightUnit.entries.forEachIndexed { index, unit ->
+                        SegmentedButton(
+                            selected = unit == weightUnit,
+                            onClick = { onWeightUnitChange(unit) },
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = WeightUnit.entries.size
+                            ),
+                            icon = {},
+                            label = {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (unit == weightUnit) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = unit.displayLabel,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+
+                MediumSpacer()
+
+                DialogButtonRow(
+                    onCancel = onDismiss,
+                    onConfirm = onConfirm,
+                    confirmEnabled = exerciseName.isNotBlank()
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditExerciseDialog(
+    exerciseName: String,
+    primaryMuscle: MuscleGroup,
+    secondaryMuscle: MuscleGroup?,
+    weightUnit: WeightUnit,
+    onNameChange: (String) -> Unit,
+    onPrimaryMuscleChange: (MuscleGroup) -> Unit,
+    onSecondaryMuscleChange: (MuscleGroup?) -> Unit,
+    onWeightUnitChange: (WeightUnit) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_exercise_edit_title))
+                MediumSpacer()
+
+                OutlinedTextField(
+                    value = exerciseName,
+                    onValueChange = onNameChange,
+                    label = { Text(stringResource(R.string.label_exercise_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = BorderGray
+                    )
+                )
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.label_muscle_group_primary),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SmoothGray
+                )
+                SmallSpacer()
+                MuscleGroupSelector(
+                    selectedMuscle = primaryMuscle,
+                    onSelect = onPrimaryMuscleChange,
+                    excludeMuscle = secondaryMuscle
+                )
+
+                MediumSpacer()
+
                 Text(
                     text = stringResource(R.string.label_muscle_group_secondary),
                     style = MaterialTheme.typography.labelMedium,

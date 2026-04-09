@@ -39,7 +39,13 @@ data class TrainingUiState(
     val newExerciseWeightUnit: WeightUnit = WeightUnit.KG,
     val editingSet: SetLog? = null,
     val editingSetWeightUnit: WeightUnit = WeightUnit.KG,
-    val deleteExerciseError: Boolean = false
+    val deleteExerciseError: Boolean = false,
+    val showEditExerciseDialog: Boolean = false,
+    val exerciseToEdit: Exercise? = null,
+    val editExerciseName: String = "",
+    val editExercisePrimaryMuscle: MuscleGroup = MuscleGroup.CHEST,
+    val editExerciseSecondaryMuscle: MuscleGroup? = null,
+    val editExerciseWeightUnit: WeightUnit = WeightUnit.KG,
 )
 
 class TrainingViewModel(
@@ -262,6 +268,60 @@ class TrainingViewModel(
         viewModelScope.launch {
             trainingRepository.deleteSet(setToDelete)
             _uiState.value = _uiState.value.copy(editingSet = null, editingSetWeightUnit = WeightUnit.KG)
+            loadWorkout(workoutId)
+        }
+    }
+
+    fun onShowEditExerciseDialog(exercise: Exercise) {
+        _uiState.value = _uiState.value.copy(
+            showEditExerciseDialog = true,
+            exerciseToEdit = exercise,
+            editExerciseName = exercise.description,
+            editExercisePrimaryMuscle = exercise.primaryMuscleGroup,
+            editExerciseSecondaryMuscle = exercise.secondaryMuscleGroups,
+            editExerciseWeightUnit = exercise.weightUnit
+        )
+    }
+
+    fun onDismissEditExerciseDialog() {
+        _uiState.value = _uiState.value.copy(
+            showEditExerciseDialog = false,
+            exerciseToEdit = null
+        )
+    }
+
+    fun onEditExerciseNameChange(name: String) {
+        _uiState.value = _uiState.value.copy(editExerciseName = name)
+    }
+
+    fun onEditExercisePrimaryMuscleChange(muscle: MuscleGroup) {
+        if (muscle == _uiState.value.editExerciseSecondaryMuscle) return
+        _uiState.value = _uiState.value.copy(editExercisePrimaryMuscle = muscle)
+    }
+
+    fun onEditExerciseSecondaryMuscleChange(muscle: MuscleGroup?) {
+        if (muscle == _uiState.value.editExercisePrimaryMuscle) return
+        _uiState.value = _uiState.value.copy(editExerciseSecondaryMuscle = muscle)
+    }
+
+    fun onEditExerciseWeightUnitChange(unit: WeightUnit) {
+        _uiState.value = _uiState.value.copy(editExerciseWeightUnit = unit)
+    }
+
+    fun confirmEditExercise() {
+        val exercise = _uiState.value.exerciseToEdit ?: return
+        val name = _uiState.value.editExerciseName.trim()
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            exerciseRepository.updateExercise(
+                exercise.copy(
+                    description = name,
+                    primaryMuscleGroup = _uiState.value.editExercisePrimaryMuscle,
+                    secondaryMuscleGroups = _uiState.value.editExerciseSecondaryMuscle,
+                    weightUnit = _uiState.value.editExerciseWeightUnit
+                )
+            )
+            onDismissEditExerciseDialog()
             loadWorkout(workoutId)
         }
     }

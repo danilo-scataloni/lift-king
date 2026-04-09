@@ -2,7 +2,9 @@ package com.daniloscataloni.liftking.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +48,7 @@ import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.LiftKingTextField
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
+import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.theme.SmoothGray
@@ -61,7 +64,10 @@ fun PeriodizationScreen(
     val activePeriodization by viewModel.activePeriodization.collectAsState()
     val showDialog by viewModel.showCreateDialog.collectAsState()
     val newName by viewModel.newPeriodizationName.collectAsState()
+    val showEditDialog by viewModel.showEditDialog.collectAsState()
+    val editName by viewModel.editPeriodizationName.collectAsState()
     var periodizationToDelete by remember { mutableStateOf<Periodization?>(null) }
+    var currentSwipedId by remember { mutableStateOf<Long?>(null) }
 
     periodizationToDelete?.let { periodization ->
         DeletePeriodizationConfirmDialog(
@@ -110,6 +116,15 @@ fun PeriodizationScreen(
             )
         }
 
+        if (showEditDialog) {
+            EditPeriodizationDialog(
+                name = editName,
+                onNameChange = { viewModel.onEditNameChange(it) },
+                onDismiss = { viewModel.onDismissEditDialog() },
+                onConfirm = { viewModel.confirmEditPeriodization() }
+            )
+        }
+
         if (periodizations.isEmpty()) {
             Column(
                 modifier = Modifier
@@ -134,19 +149,38 @@ fun PeriodizationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { currentSwipedId = null },
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(periodizations) { periodization ->
-                    PeriodizationCard(
-                        periodization = periodization,
-                        isActive = periodization.id == activePeriodization?.id,
-                        onClick = {
-                            viewModel.setActive(periodization)
-                            onPeriodizationSelected(periodization)
+                items(periodizations, key = { it.id }) { periodization ->
+                    SwipeToRevealEditBox(
+                        isRevealed = currentSwipedId == periodization.id,
+                        onRevealStateChange = { revealed ->
+                            currentSwipedId = if (revealed) periodization.id else null
                         },
-                        onLongClick = { periodizationToDelete = periodization }
-                    )
+                        onEditClick = {
+                            currentSwipedId = null
+                            viewModel.onShowEditDialog(periodization)
+                        }
+                    ) {
+                        PeriodizationCard(
+                            periodization = periodization,
+                            isActive = periodization.id == activePeriodization?.id,
+                            onClick = {
+                                currentSwipedId = null
+                                viewModel.setActive(periodization)
+                                onPeriodizationSelected(periodization)
+                            },
+                            onLongClick = {
+                                currentSwipedId = null
+                                periodizationToDelete = periodization
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -261,6 +295,45 @@ private fun CreatePeriodizationDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LiftKingHeading(text = stringResource(R.string.dialog_periodization_create_title))
+                MediumSpacer()
+                LiftKingTextField(
+                    value = name,
+                    onValueChange = onNameChange,
+                    placeholder = stringResource(R.string.dialog_periodization_create_placeholder)
+                )
+                MediumSpacer()
+                DialogButtonRow(
+                    onCancel = onDismiss,
+                    onConfirm = { if (name.isNotBlank()) onConfirm() }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditPeriodizationDialog(
+    name: String,
+    onNameChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LiftKingHeading(text = stringResource(R.string.dialog_periodization_edit_title))
                 MediumSpacer()
                 LiftKingTextField(
                     value = name,

@@ -40,6 +40,15 @@ class WorkoutListViewModel(
     private val _newWorkoutName = MutableStateFlow("")
     val newWorkoutName: StateFlow<String> = _newWorkoutName.asStateFlow()
 
+    private val _showEditDialog = MutableStateFlow(false)
+    val showEditDialog: StateFlow<Boolean> = _showEditDialog.asStateFlow()
+
+    private val _workoutToEdit = MutableStateFlow<Workout?>(null)
+    val workoutToEdit: StateFlow<Workout?> = _workoutToEdit.asStateFlow()
+
+    private val _editWorkoutName = MutableStateFlow("")
+    val editWorkoutName: StateFlow<String> = _editWorkoutName.asStateFlow()
+
     fun setPeriodizationId(id: Long) {
         _periodizationId.value = id
     }
@@ -72,6 +81,32 @@ class WorkoutListViewModel(
                 )
                 onDismissCreateDialog()
             }
+        }
+    }
+
+    fun onShowEditDialog(workout: Workout) {
+        _workoutToEdit.value = workout
+        _editWorkoutName.value = workout.name
+        _showEditDialog.value = true
+    }
+
+    fun onDismissEditDialog() {
+        _showEditDialog.value = false
+        _workoutToEdit.value = null
+        _editWorkoutName.value = ""
+    }
+
+    fun onEditNameChange(name: String) {
+        _editWorkoutName.value = name
+    }
+
+    fun confirmEditWorkout() {
+        val current = _workoutToEdit.value ?: return
+        val name = _editWorkoutName.value.trim()
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            workoutRepository.updateWorkout(current.copy(name = name))
+            onDismissEditDialog()
         }
     }
 
