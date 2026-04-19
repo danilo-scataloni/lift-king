@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 
 data class ExercisesUiState(
     val exercises: List<Exercise> = emptyList(),
+    val allExercisesCount: Int = 0,
+    val selectedMuscleFilter: MuscleGroup? = null,
     val showCreateDialog: Boolean = false,
     val showEditDialog: Boolean = false,
     val newExerciseName: String = "",
@@ -37,17 +39,41 @@ class ExercisesViewModel(
     private val _uiState = MutableStateFlow(ExercisesUiState())
     val uiState: StateFlow<ExercisesUiState> = _uiState.asStateFlow()
 
+    private var allExercises: List<Exercise> = emptyList()
     private var exerciseToEdit: Exercise? = null
+
+    val clearDeleteExerciseError: () -> Unit = {
+        _uiState.update { currentState -> currentState.copy(deleteExerciseError = false) }
+    }
 
     init {
         repository.getAllExercises()
             .map { exercises -> exercises.sortedBy { it.description.lowercase() } }
             .onEach { exercises ->
+                allExercises = exercises
                 _uiState.update { currentState ->
-                    currentState.copy(exercises = exercises)
+                    currentState.copy(
+                        exercises = filterExercisesByMuscle(
+                            exercises = exercises,
+                            muscleFilter = currentState.selectedMuscleFilter
+                        ),
+                        allExercisesCount = exercises.size
+                    )
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    fun onMuscleFilterSelected(muscle: MuscleGroup?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                exercises = filterExercisesByMuscle(
+                    exercises = allExercises,
+                    muscleFilter = muscle
+                ),
+                selectedMuscleFilter = muscle
+            )
+        }
     }
 
     fun setCreateDialogVisible(isVisible: Boolean) {
@@ -168,7 +194,16 @@ class ExercisesViewModel(
         }
     }
 
-    fun clearDeleteExerciseError() {
-        _uiState.update { currentState -> currentState.copy(deleteExerciseError = false) }
+}
+
+private fun filterExercisesByMuscle(
+    exercises: List<Exercise>,
+    muscleFilter: MuscleGroup?
+): List<Exercise> {
+    if (muscleFilter == null) return exercises
+
+    return exercises.filter { exercise ->
+        exercise.primaryMuscleGroup == muscleFilter ||
+            exercise.secondaryMuscleGroups == muscleFilter
     }
 }

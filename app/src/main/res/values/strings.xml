@@ -8,6 +8,9 @@
     <string name="screen_exercises_title">Exercícios</string>
     <string name="screen_exercises_empty_title">Nenhum exercício cadastrado</string>
     <string name="screen_exercises_empty_subtitle">Toque no + para criar um novo exercício</string>
+    <string name="screen_exercises_empty_filtered_title">Nenhum exercício para %1$s</string>
+    <string name="screen_exercises_empty_filtered_subtitle">Tente outro grupo muscular ou limpe o filtro.</string>
+    <string name="screen_exercises_filter_all">Todos</string>
 
     <!-- Periodizações -->
     <string name="screen_periodization_title">Periodizações</string>
@@ -68,6 +71,11 @@
         <item quantity="other">Você registrou %1$d séries neste treino.</item>
     </plurals>
 
+    <plurals name="screen_exercises_filtered_count">
+        <item quantity="one">%1$s · %2$d exercício</item>
+        <item quantity="other">%1$s · %2$d exercícios</item>
+    </plurals>
+
     <!-- ==================== BOTÕES ==================== -->
 
     <string name="button_cancel">Cancelar</string>
@@ -77,6 +85,7 @@
     <string name="button_continue">Continuar</string>
     <string name="button_finish">Finalizar</string>
     <string name="button_delete">Excluir</string>
+    <string name="button_clear_filter">Limpar filtro</string>
     <string name="button_add_set">Adicionar série</string>
     <string name="button_delete_set">Excluir série</string>
     <string name="button_create_exercise">Criar novo exercício</string>

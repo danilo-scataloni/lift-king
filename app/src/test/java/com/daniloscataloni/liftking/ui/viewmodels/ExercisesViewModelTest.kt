@@ -10,7 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -29,12 +29,14 @@ class ExercisesViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private lateinit var repository: IExerciseRepository
     private lateinit var viewModel: ExercisesViewModel
+    private lateinit var exercisesFlow: MutableStateFlow<List<Exercise>>
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(dispatcher)
         repository = mockk()
-        every { repository.getAllExercises() } returns flowOf(emptyList())
+        exercisesFlow = MutableStateFlow(emptyList())
+        every { repository.getAllExercises() } returns exercisesFlow
         viewModel = ExercisesViewModel(repository)
     }
 
@@ -104,4 +106,70 @@ class ExercisesViewModelTest {
 
         assertTrue(viewModel.uiState.value.deleteExerciseError)
     }
+
+    @Test
+    fun `muscle filter includes exercises where muscle is primary or secondary`() = runTest {
+        exercisesFlow.value = listOf(
+            exercise(
+                id = 1,
+                description = "Remada",
+                primary = MuscleGroup.BACK,
+                secondary = MuscleGroup.BICEPS
+            ),
+            exercise(
+                id = 2,
+                description = "Rosca Alternada",
+                primary = MuscleGroup.BICEPS
+            ),
+            exercise(
+                id = 3,
+                description = "Supino",
+                primary = MuscleGroup.CHEST,
+                secondary = MuscleGroup.TRICEPS
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.onMuscleFilterSelected(MuscleGroup.BICEPS)
+
+        assertEquals(MuscleGroup.BICEPS, viewModel.uiState.value.selectedMuscleFilter)
+        assertEquals(
+            listOf("Remada", "Rosca Alternada"),
+            viewModel.uiState.value.exercises.map { it.description }
+        )
+        assertEquals(3, viewModel.uiState.value.allExercisesCount)
+    }
+
+    @Test
+    fun `clear muscle filter restores sorted full exercise list`() = runTest {
+        exercisesFlow.value = listOf(
+            exercise(id = 1, description = "Supino", primary = MuscleGroup.CHEST),
+            exercise(id = 2, description = "Agachamento", primary = MuscleGroup.QUADS),
+            exercise(id = 3, description = "Remada", primary = MuscleGroup.BACK)
+        )
+        advanceUntilIdle()
+
+        viewModel.onMuscleFilterSelected(MuscleGroup.CHEST)
+        viewModel.onMuscleFilterSelected(null)
+
+        assertEquals(null, viewModel.uiState.value.selectedMuscleFilter)
+        assertEquals(
+            listOf("Agachamento", "Remada", "Supino"),
+            viewModel.uiState.value.exercises.map { it.description }
+        )
+    }
+
+    private fun exercise(
+        id: Int,
+        description: String,
+        primary: MuscleGroup,
+        secondary: MuscleGroup? = null,
+        weightUnit: WeightUnit = WeightUnit.KG
+    ) = Exercise(
+        id = id,
+        description = description,
+        primaryMuscleGroup = primary,
+        secondaryMuscleGroups = secondary,
+        weightUnit = weightUnit
+    )
 }
