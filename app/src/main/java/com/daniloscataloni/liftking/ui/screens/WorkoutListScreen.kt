@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BasicAlertDialog
@@ -32,7 +32,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -46,9 +45,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniloscataloni.liftking.R
@@ -57,6 +56,7 @@ import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.LiftKingTextField
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
+import com.daniloscataloni.liftking.ui.components.NavigationBackButton
 import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
@@ -64,11 +64,12 @@ import com.daniloscataloni.liftking.ui.theme.SmoothGray
 import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@Suppress("LongMethod")
 @Composable
 fun WorkoutListScreen(
     periodizationId: Long,
     viewModel: WorkoutListViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
+    onBackClick: () -> Boolean,
     onWorkoutClick: (Workout) -> Unit
 ) {
     LaunchedEffect(periodizationId) {
@@ -82,42 +83,15 @@ fun WorkoutListScreen(
     val showEditDialog by viewModel.showEditDialog.collectAsState()
     val editName by viewModel.editWorkoutName.collectAsState()
     var workoutToDelete by remember { mutableStateOf<Workout?>(null) }
-    var currentSwipedId by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 48.dp, start = 8.dp, end = 16.dp, bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.content_desc_back),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Column {
-                    Text(
-                        text = stringResource(R.string.screen_workouts_title),
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    periodization?.let {
-                        Text(
-                            text = it.name,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                        )
-                    }
-                }
-            }
+            WorkoutListTopBar(
+                periodizationName = periodization?.name,
+                onBackClick = onBackClick
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -163,60 +137,117 @@ fun WorkoutListScreen(
         }
 
         if (workouts.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            WorkoutListEmptyState(paddingValues = paddingValues)
+        } else {
+            WorkoutListContent(
+                workouts = workouts,
+                paddingValues = paddingValues,
+                onEditWorkout = viewModel::onShowEditDialog,
+                onDeleteWorkout = { workoutToDelete = it },
+                onWorkoutClick = onWorkoutClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutListTopBar(
+    periodizationName: String?,
+    onBackClick: () -> Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 48.dp, start = 8.dp, end = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        NavigationBackButton(onBackClick = onBackClick)
+        Column {
+            Text(
+                text = stringResource(R.string.screen_workouts_title),
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            periodizationName?.let { name ->
                 Text(
-                    text = stringResource(R.string.screen_workouts_empty_title),
+                    text = name,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
-                MediumSpacer()
-                Text(
-                    text = stringResource(R.string.screen_workouts_empty_subtitle),
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                    fontSize = 14.sp
-                )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) { currentSwipedId = null },
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(workouts, key = { it.id }) { workout ->
-                    SwipeToRevealEditBox(
-                        isRevealed = currentSwipedId == workout.id,
-                        onRevealStateChange = { revealed ->
-                            currentSwipedId = if (revealed) workout.id else null
-                        },
-                        onEditClick = {
-                            currentSwipedId = null
-                            viewModel.onShowEditDialog(workout)
-                        }
-                    ) {
-                        WorkoutCard(
-                            workout = workout,
-                            onClick = {
-                                currentSwipedId = null
-                                onWorkoutClick(workout)
-                            },
-                            onLongClick = {
-                                currentSwipedId = null
-                                workoutToDelete = workout
-                            }
-                        )
-                    }
+        }
+    }
+}
+
+@Composable
+private fun WorkoutListEmptyState(
+    paddingValues: PaddingValues
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.screen_workouts_empty_title),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+        )
+        MediumSpacer()
+        Text(
+            text = stringResource(R.string.screen_workouts_empty_subtitle),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun WorkoutListContent(
+    workouts: List<Workout>,
+    paddingValues: PaddingValues,
+    onEditWorkout: (Workout) -> Unit,
+    onDeleteWorkout: (Workout) -> Unit,
+    onWorkoutClick: (Workout) -> Unit
+) {
+    var currentSwipedId by remember { mutableStateOf<Long?>(null) }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) { currentSwipedId = null },
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(workouts, key = { it.id }) { workout ->
+            SwipeToRevealEditBox(
+                isRevealed = currentSwipedId == workout.id,
+                onRevealStateChange = { revealed ->
+                    currentSwipedId = if (revealed) workout.id else null
+                },
+                onEditClick = {
+                    currentSwipedId = null
+                    onEditWorkout(workout)
                 }
+            ) {
+                WorkoutCard(
+                    workout = workout,
+                    onClick = {
+                        currentSwipedId = null
+                        onWorkoutClick(workout)
+                    },
+                    onLongClick = {
+                        currentSwipedId = null
+                        onDeleteWorkout(workout)
+                    }
+                )
             }
         }
     }

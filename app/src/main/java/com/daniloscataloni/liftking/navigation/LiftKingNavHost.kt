@@ -140,7 +140,7 @@ fun LiftKingNavHost(
                 val route: Route.Workouts = backStackEntryForRoute.toRoute()
                 WorkoutListScreen(
                     periodizationId = route.periodizationId,
-                    onBackClick = { navController.popBackStack() },
+                    onBackClick = { navController.popBackStackSafely() },
                     onWorkoutClick = { workout ->
                         navController.navigateToTraining(workout.id)
                     }
@@ -151,8 +151,8 @@ fun LiftKingNavHost(
                 val route: Route.Training = backStackEntryForRoute.toRoute()
                 TrainingScreen(
                     workoutId = route.workoutId,
-                    onBackClick = { navController.popBackStack() },
-                    onComplete = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStackSafely() },
+                    onComplete = { navController.popBackStackSafely() }
                 )
             }
 

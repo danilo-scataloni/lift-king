@@ -28,7 +28,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -76,6 +75,7 @@ import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.EditExerciseDialog
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
+import com.daniloscataloni.liftking.ui.components.NavigationBackButton
 import com.daniloscataloni.liftking.ui.components.SmallSpacer
 import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
 import com.daniloscataloni.liftking.ui.extensions.toReadableString
@@ -88,11 +88,12 @@ import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
+@Suppress("LongMethod")
 @Composable
 fun TrainingScreen(
     workoutId: Long,
     viewModel: TrainingViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
+    onBackClick: () -> Boolean,
     onComplete: () -> Unit
 ) {
     LaunchedEffect(workoutId) {
@@ -107,54 +108,16 @@ fun TrainingScreen(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 48.dp, start = 8.dp, end = 16.dp, bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.content_desc_back),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Text(
-                    text = uiState.workoutName,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            TrainingTopBar(
+                workoutName = uiState.workoutName,
+                onBackClick = onBackClick
+            )
         },
         floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SmallFloatingActionButton(
-                    onClick = { viewModel.showAddExerciseDialog() },
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.content_desc_add_exercise),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-                FloatingActionButton(
-                    onClick = { showFinishConfirmDialog = true },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = stringResource(R.string.content_desc_finish_workout),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+            TrainingFabActions(
+                onAddExerciseClick = viewModel::showAddExerciseDialog,
+                onFinishWorkoutClick = { showFinishConfirmDialog = true }
+            )
         }
     ) { paddingValues ->
         // Dialog de confirmação para finalizar treino
@@ -319,6 +282,60 @@ fun TrainingScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun TrainingTopBar(
+    workoutName: String,
+    onBackClick: () -> Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 48.dp, start = 8.dp, end = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        NavigationBackButton(onBackClick = onBackClick)
+        Text(
+            text = workoutName,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+private fun TrainingFabActions(
+    onAddExerciseClick: () -> Unit,
+    onFinishWorkoutClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        SmallFloatingActionButton(
+            onClick = onAddExerciseClick,
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(R.string.content_desc_add_exercise),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        FloatingActionButton(
+            onClick = onFinishWorkoutClick,
+            containerColor = MaterialTheme.colorScheme.primary
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = stringResource(R.string.content_desc_finish_workout),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }
