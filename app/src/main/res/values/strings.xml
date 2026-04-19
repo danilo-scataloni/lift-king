@@ -6,6 +6,8 @@
 
     <!-- Exercícios -->
     <string name="screen_exercises_title">Exercícios</string>
+    <string name="screen_exercises_empty_title">Nenhum exercício cadastrado</string>
+    <string name="screen_exercises_empty_subtitle">Toque no + para criar um novo exercício</string>
 
     <!-- Periodizações -->
     <string name="screen_periodization_title">Periodizações</string>
@@ -97,6 +99,7 @@
     <!-- ==================== PLACEHOLDERS ==================== -->
 
     <string name="placeholder_exercise_name">Digite o nome do exercício</string>
+    <string name="label_none">Nenhum</string>
 
     <!-- ==================== TABELA ==================== -->
 
@@ -124,10 +127,18 @@
     <string name="content_desc_add_exercise">Adicionar exercício</string>
     <string name="content_desc_new_periodization">Nova periodização</string>
     <string name="content_desc_new_workout">Novo treino</string>
+    <string name="content_desc_new_exercise">Novo exercício</string>
     <string name="content_desc_finish_workout">Finalizar treino</string>
     <string name="content_desc_active">Ativa</string>
     <string name="content_desc_exercise_icon">Ícone de exercício</string>
     <string name="content_desc_view_details">Ver detalhes</string>
+    <string name="content_desc_edit_exercise">Editar exercício</string>
+    <string name="content_desc_delete_exercise">Excluir exercício</string>
+
+    <!-- ==================== NAVEGAÇÃO ==================== -->
+
+    <string name="nav_workouts">Treinos</string>
+    <string name="nav_exercises">Exercícios</string>
 
     <!-- ==================== ERROS ==================== -->
 

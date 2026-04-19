@@ -48,10 +48,14 @@ Executar a partir da raiz do repositorio:
 - Preserve a separacao entre camadas. A UI nao deve operar com entidades Room diretamente.
 - Ao mover dados entre `data` e `domain`, reutilize ou expanda os mappers em `data/mappers/EntityMappers.kt`.
 - ViewModels usam `StateFlow` e `viewModelScope`; nao introduza `LiveData`.
+- Para telas com muitos estados relacionados, prefira expor uma unica `UiState` pela ViewModel em vez de varios `StateFlow` soltos.
+- Quando a `UiState` for especifica de uma feature, mantenha a data class no mesmo arquivo da ViewModel. So extraia para arquivo separado se houver reutilizacao real entre multiplas telas ou modulos.
 - A injecao de dependencia e feita com Koin. Registre novos bindings em `app/src/main/java/com/daniloscataloni/liftking/di/Koin.kt`.
 - Navegacao usa rotas serializaveis em `app/src/main/java/com/daniloscataloni/liftking/navigation/Routes.kt`.
+- A navegacao principal agora usa uma bottom navigation fixa com duas abas top-level: `Treinos` e `Exercicios`. O fluxo `Periodization -> Workouts -> Training` continua dentro da aba `Treinos`.
 - Repositorios seguem o padrao interface `I*Repository`. Algumas implementacoes ficam aninhadas dentro da propria interface, como `IWorkoutRepository.WorkoutRepository`.
 - Prefira manter nomes e idioma consistentes com o codigo atual: classes e APIs em ingles, textos de UI em portugues quando fizer sentido ao produto.
+- O CRUD da biblioteca global de exercicios fica em `ExercisesScreen`/`ExercisesViewModel`; o `AddExerciseDialog` continua sendo o ponto de adicionar exercicios ao treino dentro de `TrainingScreen`.
 
 ## Room e migracoes
 
@@ -89,4 +93,4 @@ Executar a partir da raiz do repositorio:
 
 - Comece por `README.md`, `CLAUDE.md`, `app/build.gradle.kts` e `app/src/main/java/com/daniloscataloni/liftking/di/Koin.kt`.
 - Para fluxos de treino, a entrada principal costuma passar por `TrainingViewModel`.
-- Para listas e navegacao principal, confira `PeriodizationScreen`, `WorkoutListScreen`, `TrainingScreen` e `LiftKingNavHost`.
+- Para listas e navegacao principal, confira `PeriodizationScreen`, `WorkoutListScreen`, `TrainingScreen`, `ExercisesScreen` e `LiftKingNavHost`.

@@ -11,6 +11,7 @@ import com.daniloscataloni.liftking.data.repositories.PeriodizationRepository
 import com.daniloscataloni.liftking.data.repositories.TrainingRepository
 import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository.WorkoutRepository
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
+import com.daniloscataloni.liftking.ui.viewmodels.ExercisesViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.WorkoutListViewModel
 import org.koin.android.ext.koin.androidContext
@@ -23,6 +24,7 @@ val appModule = module {
 
     // ========== ViewModels ==========
     viewModelOf(::PeriodizationViewModel)
+    viewModelOf(::ExercisesViewModel)
     viewModelOf(::TrainingViewModel)
     viewModelOf(::WorkoutListViewModel)
 
