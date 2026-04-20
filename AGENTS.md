@@ -55,7 +55,7 @@ Executar a partir da raiz do repositorio:
 - Navegacao usa rotas serializaveis em `app/src/main/java/com/daniloscataloni/liftking/navigation/Routes.kt`.
 - A navegacao principal agora usa uma bottom navigation fixa com duas abas top-level: `Treinos` e `Exercicios`. O fluxo `Periodization -> Workouts -> Training` continua dentro da aba `Treinos`.
 - Repositorios seguem o padrao interface `I*Repository`. Algumas implementacoes ficam aninhadas dentro da propria interface, como `IWorkoutRepository.WorkoutRepository`.
-- Prefira manter nomes e idioma consistentes com o codigo atual: classes e APIs em ingles, textos de UI em portugues quando fizer sentido ao produto.
+- Prefira manter nomes e idioma consistentes com o codigo atual: classes e APIs em ingles; textos de UI devem ser localizados via recursos Android, sem hardcode, com suporte ao menos em `app/src/main/res/values/strings.xml` e `app/src/main/res/values-en/strings.xml`.
 - O CRUD da biblioteca global de exercicios fica em `ExercisesScreen`/`ExercisesViewModel`; o `AddExerciseDialog` continua sendo o ponto de adicionar exercicios ao treino dentro de `TrainingScreen`.
 - O fluxo de descanso fica distribuido entre `TrainingScreen`, `TrainingViewModel` e o pacote `resttimer`; ao mexer nele, preserve a regra: app em foreground vibra/atualiza UI, app em background continua notificando.
 - Finalizar treino deve cancelar qualquer descanso ativo para nao reabrir sessao por toque em notificacao atrasada.

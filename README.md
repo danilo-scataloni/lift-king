@@ -26,6 +26,7 @@ Periodização → Treinos → Exercícios → Séries
 - **Timer de Descanso**: Salvar série e iniciar descanso com presets, tempo customizado e atalho de `+30s`
 - **Alertas em Background**: Notificação de descanso finalizado mesmo fora do app, com abertura direta do treino
 - **Histórico**: Comparar desempenho atual com treinos anteriores
+- **Idiomas**: Interface localizada em português e inglês, seguindo o idioma do sistema
 - **Bottom Navigation**: Alternância rápida entre treinos e biblioteca de exercícios
 
 ## Tech Stack
