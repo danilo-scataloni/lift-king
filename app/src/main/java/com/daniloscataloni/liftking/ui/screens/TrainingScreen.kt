@@ -162,7 +162,7 @@ fun TrainingScreen(
     val exactAlarmSettingsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        viewModel.dismissExactAlarmPermissionPrompt()
+        viewModel.onExactAlarmSettingsResult()
     }
 
     LaunchedEffect(uiState.restCompletionSignal) {

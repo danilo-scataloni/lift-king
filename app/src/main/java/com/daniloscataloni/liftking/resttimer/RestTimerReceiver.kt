@@ -4,20 +4,18 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ProcessLifecycleOwner
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.daniloscataloni.liftking.domain.models.RestTimer
 
 class RestTimerReceiver : BroadcastReceiver() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         RestTimerStorage(context).clearActiveTimer()
         val notificationManager = RestNotificationManager(context)
         notificationManager.cancelOngoingRestTimerNotification()
-        val isAppInForeground = ProcessLifecycleOwner.get()
-            .lifecycle
-            .currentState
-            .isAtLeast(Lifecycle.State.STARTED)
+        val isAppInForeground = AppVisibilityTracker.isAppInForegroundForProcess()
 
         if (isAppInForeground) {
             vibrateForRest(context)

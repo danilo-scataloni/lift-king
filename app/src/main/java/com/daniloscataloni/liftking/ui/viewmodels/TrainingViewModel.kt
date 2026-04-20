@@ -305,6 +305,30 @@ class TrainingViewModel(
         _uiState.value = _uiState.value.copy(showExactAlarmPermissionPrompt = false)
     }
 
+    fun onExactAlarmSettingsResult() {
+        val currentTimer = _uiState.value.activeRestTimer
+        val result = restTimerManager.rescheduleActiveTimer()
+
+        if (result != null) {
+            val activeRestTimer = result.timer.toUiState()
+            _uiState.value = _uiState.value.copy(
+                activeRestTimer = activeRestTimer,
+                showExactAlarmPermissionPrompt = false
+            )
+            startRestTimerCountdown(activeRestTimer)
+            return
+        }
+
+        if (currentTimer != null && calculateRemainingSeconds(currentTimer.endAtEpochMillis) <= 0 &&
+            appVisibilityTracker.isAppInForeground
+        ) {
+            finishRestTimerInApp()
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(showExactAlarmPermissionPrompt = false)
+    }
+
     fun consumeRestCompletionSignal() {
         _uiState.value = _uiState.value.copy(restCompletionSignal = 0)
     }

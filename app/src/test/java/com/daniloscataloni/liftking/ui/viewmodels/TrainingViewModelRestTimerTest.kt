@@ -170,6 +170,44 @@ class TrainingViewModelRestTimerTest {
     }
 
     @Test
+    fun `onExactAlarmSettingsResult reschedules active timer and hides prompt`() = runTest {
+        every { restTimerManager.scheduleRestTimer(any()) } answers {
+            RestTimerScheduleResult(
+                timer = firstArg(),
+                scheduleMode = RestTimerScheduleMode.INEXACT
+            )
+        }
+        every { restTimerManager.rescheduleActiveTimer() } returns RestTimerScheduleResult(
+            timer = RestTimer(
+                workoutId = 1L,
+                exerciseId = 5,
+                exerciseName = "Remada",
+                workoutName = "Treino A",
+                durationSeconds = 60,
+                startAtEpochMillis = System.currentTimeMillis(),
+                endAtEpochMillis = System.currentTimeMillis() + 60_000L
+            ),
+            scheduleMode = RestTimerScheduleMode.EXACT
+        )
+
+        viewModel.loadWorkout(1L)
+        advanceUntilIdle()
+        viewModel.startRestTimer(
+            exerciseId = 5,
+            exerciseName = "Remada",
+            durationSeconds = 60
+        )
+
+        assertTrue(viewModel.uiState.value.showExactAlarmPermissionPrompt)
+
+        viewModel.onExactAlarmSettingsResult()
+
+        assertFalse(viewModel.uiState.value.showExactAlarmPermissionPrompt)
+        assertEquals("Remada", viewModel.uiState.value.activeRestTimer?.exerciseName)
+        io.mockk.verify { restTimerManager.rescheduleActiveTimer() }
+    }
+
+    @Test
     fun `completeSession cancels active rest timer before finishing workout`() = runTest {
         every { restTimerManager.scheduleRestTimer(any()) } answers {
             RestTimerScheduleResult(

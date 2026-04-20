@@ -19,6 +19,7 @@ interface IRestTimerManager {
     fun getActiveTimer(): RestTimer?
     fun getLastUsedDurationSeconds(): Int
     fun scheduleRestTimer(restTimer: RestTimer): RestTimerScheduleResult
+    fun rescheduleActiveTimer(): RestTimerScheduleResult?
     fun cancelActiveTimer()
 }
 
@@ -68,6 +69,11 @@ class RestTimerManager(
         syncOngoingNotification()
 
         return RestTimerScheduleResult(restTimer, scheduleMode)
+    }
+
+    override fun rescheduleActiveTimer(): RestTimerScheduleResult? {
+        val activeTimer = storage.getActiveTimer() ?: return null
+        return scheduleRestTimer(activeTimer)
     }
 
     override fun cancelActiveTimer() {

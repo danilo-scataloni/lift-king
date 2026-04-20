@@ -64,9 +64,9 @@ class RestNotificationManager(
             .setSilent(true)
             .setShowWhen(true)
             .setWhen(restTimer.endAtEpochMillis)
+            // Let the receiver dismiss the notification so inexact alarms do not make it vanish early.
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
-            .setTimeoutAfter((restTimer.endAtEpochMillis - System.currentTimeMillis()).coerceAtLeast(0L))
             .build()
 
         NotificationManagerCompat.from(context).notify(REST_ONGOING_NOTIFICATION_ID, notification)
