@@ -5,6 +5,8 @@ import com.daniloscataloni.liftking.domain.models.MuscleGroup
 import com.daniloscataloni.liftking.domain.models.SetLog
 import com.daniloscataloni.liftking.domain.models.WeightUnit
 import com.daniloscataloni.liftking.domain.models.WorkoutExercise
+import com.daniloscataloni.liftking.resttimer.AppVisibilityTracker
+import com.daniloscataloni.liftking.resttimer.IRestTimerManager
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -13,13 +15,19 @@ import org.junit.jupiter.api.Test
 class TrainingViewModelWeightUnitTest {
 
     private lateinit var viewModel: TrainingViewModel
+    private lateinit var restTimerManager: IRestTimerManager
+    private lateinit var appVisibilityTracker: AppVisibilityTracker
 
     @BeforeEach
     fun setup() {
+        restTimerManager = mockk(relaxed = true)
+        appVisibilityTracker = mockk(relaxed = true)
         viewModel = TrainingViewModel(
             workoutRepository = mockk(relaxed = true),
             trainingRepository = mockk(relaxed = true),
-            exerciseRepository = mockk(relaxed = true)
+            exerciseRepository = mockk(relaxed = true),
+            restTimerManager = restTimerManager,
+            appVisibilityTracker = appVisibilityTracker
         )
     }
 

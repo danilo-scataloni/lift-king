@@ -1,5 +1,14 @@
 package com.daniloscataloni.liftking.ui.screens
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -22,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,16 +40,20 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -56,24 +70,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.domain.models.Exercise
 import com.daniloscataloni.liftking.domain.models.SetLog
 import com.daniloscataloni.liftking.domain.models.WeightUnit
+import com.daniloscataloni.liftking.resttimer.vibrateForRest
 import com.daniloscataloni.liftking.ui.components.CreateExerciseDialog
 import com.daniloscataloni.liftking.ui.components.DeleteExerciseFromLibraryConfirmDialog
 import com.daniloscataloni.liftking.ui.components.DialogButtonRow
 import com.daniloscataloni.liftking.ui.components.EditExerciseDialog
+import com.daniloscataloni.liftking.ui.components.LiftKingButton
 import com.daniloscataloni.liftking.ui.components.LiftKingHeading
+import com.daniloscataloni.liftking.ui.components.LiftKingSimpleDialog
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
 import com.daniloscataloni.liftking.ui.components.NavigationBackButton
 import com.daniloscataloni.liftking.ui.components.SmallSpacer
@@ -82,13 +103,26 @@ import com.daniloscataloni.liftking.ui.extensions.toReadableString
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.theme.SmoothGray
+import com.daniloscataloni.liftking.ui.viewmodels.ActiveRestTimerUiState
 import com.daniloscataloni.liftking.ui.viewmodels.ExerciseWithSets
 import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-@Suppress("LongMethod")
+private data class RestPromptTarget(
+    val exerciseId: Int,
+    val exerciseName: String
+)
+
+private data class PendingRestStartRequest(
+    val exerciseId: Int,
+    val exerciseName: String,
+    val durationSeconds: Int
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 @Composable
 fun TrainingScreen(
     workoutId: Long,
@@ -101,8 +135,61 @@ fun TrainingScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var showAddSetDialog by remember { mutableStateOf<ExerciseWithSets?>(null) }
     var showFinishConfirmDialog by remember { mutableStateOf(false) }
+    var restPromptTarget by remember { mutableStateOf<RestPromptTarget?>(null) }
+    var pendingRestStartRequest by remember { mutableStateOf<PendingRestStartRequest?>(null) }
+    var showNotificationPermissionDeniedDialog by remember { mutableStateOf(false) }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        pendingRestStartRequest?.let { request ->
+            if (!isGranted) {
+                showNotificationPermissionDeniedDialog = true
+            }
+            viewModel.startRestTimer(
+                exerciseId = request.exerciseId,
+                exerciseName = request.exerciseName,
+                durationSeconds = request.durationSeconds
+            )
+            pendingRestStartRequest = null
+        }
+    }
+    val exactAlarmSettingsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        viewModel.dismissExactAlarmPermissionPrompt()
+    }
+
+    LaunchedEffect(uiState.restCompletionSignal) {
+        if (uiState.restCompletionSignal <= 0) return@LaunchedEffect
+        vibrateForRest(context)
+        viewModel.consumeRestCompletionSignal()
+    }
+
+    fun requestRestTimerStart(exerciseId: Int, exerciseName: String, durationSeconds: Int) {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingRestStartRequest = PendingRestStartRequest(
+                exerciseId = exerciseId,
+                exerciseName = exerciseName,
+                durationSeconds = durationSeconds
+            )
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            return
+        }
+
+        viewModel.startRestTimer(
+            exerciseId = exerciseId,
+            exerciseName = exerciseName,
+            durationSeconds = durationSeconds
+        )
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -110,7 +197,10 @@ fun TrainingScreen(
         topBar = {
             TrainingTopBar(
                 workoutName = uiState.workoutName,
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                activeRestTimer = uiState.activeRestTimer,
+                onExtendRest = { viewModel.extendRestTimer() },
+                onCancelRest = { viewModel.cancelRestTimer() }
             )
         },
         floatingActionButton = {
@@ -134,12 +224,50 @@ fun TrainingScreen(
             )
         }
 
+        if (uiState.showExactAlarmPermissionPrompt) {
+            LiftKingSimpleDialog(
+                title = stringResource(R.string.dialog_rest_exact_alarm_title),
+                message = stringResource(R.string.dialog_rest_exact_alarm_message),
+                confirmButtonText = stringResource(R.string.button_open_settings),
+                cancelButtonText = stringResource(R.string.button_keep_current),
+                onDismiss = viewModel::dismissExactAlarmPermissionPrompt,
+                onConfirm = {
+                    viewModel.dismissExactAlarmPermissionPrompt()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        exactAlarmSettingsLauncher.launch(
+                            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                            }
+                        )
+                    }
+                }
+            )
+        }
+
+        if (showNotificationPermissionDeniedDialog) {
+            LiftKingSimpleDialog(
+                title = stringResource(R.string.dialog_rest_notifications_title),
+                message = stringResource(R.string.dialog_rest_notifications_message),
+                confirmButtonText = stringResource(R.string.button_open_settings),
+                cancelButtonText = stringResource(R.string.button_keep_current),
+                onDismiss = { showNotificationPermissionDeniedDialog = false },
+                onConfirm = {
+                    showNotificationPermissionDeniedDialog = false
+                    context.startActivity(
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        }
+                    )
+                }
+            )
+        }
+
         showAddSetDialog?.let { exerciseWithSets ->
             AddSetDialog(
                 exerciseName = exerciseWithSets.exercise.description,
                 weightUnit = exerciseWithSets.exercise.weightUnit,
                 onDismiss = { showAddSetDialog = null },
-                onConfirm = { weight, reps, rir ->
+                onSave = { weight, reps, rir ->
                     viewModel.logSet(
                         exerciseId = exerciseWithSets.exercise.id,
                         weight = weight,
@@ -147,9 +275,39 @@ fun TrainingScreen(
                         rir = rir
                     )
                     showAddSetDialog = null
+                },
+                onSaveAndRest = { weight, reps, rir ->
+                    viewModel.logSet(
+                        exerciseId = exerciseWithSets.exercise.id,
+                        weight = weight,
+                        reps = reps,
+                        rir = rir
+                    )
+                    showAddSetDialog = null
+                    restPromptTarget = RestPromptTarget(
+                        exerciseId = exerciseWithSets.exercise.id,
+                        exerciseName = exerciseWithSets.exercise.description
+                    )
                 }
             )
         }
+
+        restPromptTarget?.let { target ->
+            RestDurationBottomSheet(
+                exerciseName = target.exerciseName,
+                initialDurationSeconds = uiState.lastRestDurationSeconds,
+                onDismiss = { restPromptTarget = null },
+                onStartRest = { durationSeconds ->
+                    requestRestTimerStart(
+                        exerciseId = target.exerciseId,
+                        exerciseName = target.exerciseName,
+                        durationSeconds = durationSeconds
+                    )
+                    restPromptTarget = null
+                }
+            )
+        }
+
         if (uiState.showAddExerciseDialog) {
             AddExerciseDialog(
                 exercises = uiState.availableExercises,
@@ -289,22 +447,44 @@ fun TrainingScreen(
 @Composable
 private fun TrainingTopBar(
     workoutName: String,
-    onBackClick: () -> Boolean
+    onBackClick: () -> Boolean,
+    activeRestTimer: ActiveRestTimerUiState?,
+    onExtendRest: () -> Unit,
+    onCancelRest: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 48.dp, start = 8.dp, end = 16.dp, bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = 48.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        NavigationBackButton(onBackClick = onBackClick)
-        Text(
-            text = workoutName,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp)
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavigationBackButton(onBackClick = onBackClick)
+            Text(
+                text = workoutName,
+                modifier = Modifier.weight(1f),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        activeRestTimer?.let { timer ->
+            TopBarRestTimerIndicator(
+                activeRestTimer = timer,
+                onExtend = onExtendRest,
+                onCancel = onCancelRest
+            )
+        }
     }
 }
 
@@ -336,6 +516,84 @@ private fun TrainingFabActions(
                 contentDescription = stringResource(R.string.content_desc_finish_workout),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
+        }
+    }
+}
+
+@Composable
+private fun TopBarRestTimerIndicator(
+    activeRestTimer: ActiveRestTimerUiState,
+    onExtend: () -> Unit,
+    onCancel: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(containerColor = BackgroundGray),
+        border = BorderStroke(1.dp, BorderGray)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Timer,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(14.dp)
+            )
+
+            Text(
+                text = formatRestDuration(activeRestTimer.remainingSeconds),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(4.dp)
+                    .background(BorderGray, CircleShape)
+            )
+
+            Text(
+                text = activeRestTimer.exerciseName,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodySmall,
+                color = SmoothGray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = stringResource(R.string.button_add_thirty_seconds),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .clickable(onClick = onExtend)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .clickable(onClick = onCancel),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.content_desc_cancel_rest),
+                    tint = SmoothGray,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
         }
     }
 }
@@ -580,17 +838,25 @@ private fun SetRow(
     }
 }
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddSetDialog(
     exerciseName: String,
     weightUnit: WeightUnit,
     onDismiss: () -> Unit,
-    onConfirm: (weight: Float, reps: Int, rir: Int?) -> Unit
+    onSave: (weight: Float, reps: Int, rir: Int?) -> Unit,
+    onSaveAndRest: (weight: Float, reps: Int, rir: Int?) -> Unit
 ) {
     var weight by remember { mutableStateOf("") }
     var reps by remember { mutableStateOf("") }
     var rir by remember { mutableStateOf("") }
+
+    fun parseInputs(): Triple<Float, Int, Int?>? {
+        val weightValue = weight.toFloatOrNull() ?: return null
+        val repsValue = reps.toIntOrNull() ?: return null
+        return Triple(weightValue, repsValue, rir.toIntOrNull())
+    }
 
     BasicAlertDialog(onDismissRequest = onDismiss) {
         Surface(
@@ -656,21 +922,134 @@ private fun AddSetDialog(
 
                 MediumSpacer()
 
+                LiftKingButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        parseInputs()?.let { (weightValue, repsValue, rirValue) ->
+                            onSaveAndRest(weightValue, repsValue, rirValue)
+                        }
+                    },
+                    text = stringResource(R.string.button_save_and_rest),
+                    isLight = true,
+                    enabled = parseInputs() != null
+                )
+
+                SmallSpacer()
+
                 DialogButtonRow(
+                    cancelText = stringResource(R.string.button_cancel),
+                    confirmText = stringResource(R.string.button_save_set),
                     onCancel = onDismiss,
                     onConfirm = {
-                        val weightValue = weight.toFloatOrNull()
-                        val repsValue = reps.toIntOrNull()
-                        if (weightValue != null && repsValue != null) {
-                            onConfirm(weightValue, repsValue, rir.toIntOrNull())
+                        parseInputs()?.let { (weightValue, repsValue, rirValue) ->
+                            onSave(weightValue, repsValue, rirValue)
                         }
-                    }
+                    },
+                    confirmEnabled = parseInputs() != null
                 )
             }
         }
     }
 }
 
+@Suppress("LongMethod")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RestDurationBottomSheet(
+    exerciseName: String,
+    initialDurationSeconds: Int,
+    onDismiss: () -> Unit,
+    onStartRest: (Int) -> Unit
+) {
+    val presetDurations = remember { listOf(45, 60, 90, 120, 180) }
+    var customDurationSeconds by remember(initialDurationSeconds) {
+        mutableStateOf(
+            initialDurationSeconds.toString()
+                .takeUnless { initialDurationSeconds in presetDurations }
+                .orEmpty()
+        )
+    }
+    var selectedPresetDuration by remember(initialDurationSeconds) {
+        mutableStateOf(initialDurationSeconds.takeIf { it in presetDurations })
+    }
+    val selectedDurationSeconds = selectedPresetDuration ?: customDurationSeconds.toIntOrNull()
+    val isDurationValid = selectedDurationSeconds != null && selectedDurationSeconds > 0
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 8.dp)
+        ) {
+            LiftKingHeading(text = stringResource(R.string.sheet_rest_title))
+            SmallSpacer()
+            Text(
+                text = stringResource(R.string.sheet_rest_subtitle, exerciseName),
+                style = MaterialTheme.typography.bodyMedium,
+                color = SmoothGray
+            )
+
+            MediumSpacer()
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(presetDurations) { durationSeconds ->
+                    FilterChip(
+                        selected = selectedDurationSeconds == durationSeconds,
+                        onClick = {
+                            selectedPresetDuration = durationSeconds
+                            customDurationSeconds = ""
+                        },
+                        label = { Text(text = formatRestDuration(durationSeconds)) }
+                    )
+                }
+            }
+
+            MediumSpacer()
+
+            OutlinedTextField(
+                value = customDurationSeconds,
+                onValueChange = { value ->
+                    customDurationSeconds = value.filter(Char::isDigit)
+                    selectedPresetDuration = null
+                },
+                label = { Text(stringResource(R.string.label_rest_custom_seconds)) },
+                placeholder = { Text(stringResource(R.string.placeholder_rest_seconds)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+
+            if (!isDurationValid) {
+                SmallSpacer()
+                Text(
+                    text = stringResource(R.string.error_rest_invalid_seconds),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            MediumSpacer()
+
+            LiftKingButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { selectedDurationSeconds?.let(onStartRest) },
+                text = stringResource(R.string.button_start_rest),
+                isLight = true,
+                enabled = isDurationValid
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditSetDialog(
@@ -875,6 +1254,7 @@ private fun FinishWorkoutDialog(
     }
 }
 
+@Suppress("LongMethod", "LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun AddExerciseDialog(
@@ -1009,7 +1389,11 @@ private fun AddExerciseDialog(
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
                                         Text(
-                                            text = "${exercise.primaryMuscleGroup.toReadableString()} · ${exercise.weightUnit.shortLabel}",
+                                            text = buildString {
+                                                append(exercise.primaryMuscleGroup.toReadableString())
+                                                append(" · ")
+                                                append(exercise.weightUnit.shortLabel)
+                                            },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = SmoothGray
                                         )
@@ -1064,5 +1448,15 @@ private fun RemoveExerciseConfirmDialog(
                 )
             }
         }
+    }
+}
+
+private fun formatRestDuration(durationSeconds: Int): String {
+    val minutes = durationSeconds / 60
+    val seconds = durationSeconds % 60
+    return if (minutes > 0) {
+        "${minutes}m ${seconds.toString().padStart(2, '0')}s"
+    } else {
+        "${seconds}s"
     }
 }

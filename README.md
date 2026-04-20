@@ -23,6 +23,8 @@ Periodização → Treinos → Exercícios → Séries
 - **Treinos**: Definir treinos dentro de cada periodização
 - **Exercícios**: Biblioteca global com cards, grupos musculares e unidade de peso
 - **Registro de Séries**: Peso (kg), repetições e RIR
+- **Timer de Descanso**: Salvar série e iniciar descanso com presets, tempo customizado e atalho de `+30s`
+- **Alertas em Background**: Notificação de descanso finalizado mesmo fora do app, com abertura direta do treino
 - **Histórico**: Comparar desempenho atual com treinos anteriores
 - **Bottom Navigation**: Alternância rápida entre treinos e biblioteca de exercícios
 
@@ -60,6 +62,14 @@ com/daniloscataloni/liftking/
 
 - Android SDK 25+ (Android 7.1)
 - Java 11
+
+## Descanso e Notificações
+
+- O fluxo de treino suporta descanso entre séries direto na `TrainingScreen`.
+- Com o app aberto, o cronômetro aparece em uma faixa full-width no topo da tela de treino.
+- Com o app em background, o app mantém notificação de descanso em andamento e mostra alerta quando o tempo termina.
+- Em Android 13+, o app pode pedir permissão de notificações (`POST_NOTIFICATIONS`).
+- Em Android 12+, o app pode sugerir habilitar alarmes exatos (`SCHEDULE_EXACT_ALARM`) para melhorar a precisão do alerta.
 
 ## Build
 

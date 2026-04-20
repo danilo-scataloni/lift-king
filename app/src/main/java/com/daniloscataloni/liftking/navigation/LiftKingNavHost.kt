@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,15 +58,28 @@ private enum class TopLevelDestination(
     )
 }
 
+@Suppress("LongMethod")
 @Composable
 fun LiftKingNavHost(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    pendingTrainingWorkoutId: Long? = null,
+    onPendingTrainingWorkoutConsumed: () -> Unit = {}
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-    val selectedTopLevelDestination = when {
-        currentDestination?.hasRoute<Route.Exercises>() == true -> TopLevelDestination.Exercises
-        else -> TopLevelDestination.Workouts
+    val selectedTopLevelDestination = if (currentDestination?.hasRoute<Route.Exercises>() == true) {
+        TopLevelDestination.Exercises
+    } else {
+        TopLevelDestination.Workouts
+    }
+
+    LaunchedEffect(pendingTrainingWorkoutId) {
+        pendingTrainingWorkoutId ?: return@LaunchedEffect
+        navController.navigateToTraining(
+            workoutId = pendingTrainingWorkoutId,
+            launchSingleTop = true
+        )
+        onPendingTrainingWorkoutConsumed()
     }
 
     Scaffold(

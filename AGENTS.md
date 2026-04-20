@@ -27,6 +27,7 @@ Stack principal:
 - `app/src/main/java/com/daniloscataloni/liftking/ui/components`: componentes reutilizaveis
 - `app/src/main/java/com/daniloscataloni/liftking/navigation`: rotas e `NavHost`
 - `app/src/main/java/com/daniloscataloni/liftking/di/Koin.kt`: composicao de DI
+- `app/src/main/java/com/daniloscataloni/liftking/resttimer`: timer de descanso, receiver, notificacoes e persistencia leve
 - `app/src/test`: testes unitarios
 - `app/src/androidTest`: testes instrumentados
 
@@ -56,6 +57,9 @@ Executar a partir da raiz do repositorio:
 - Repositorios seguem o padrao interface `I*Repository`. Algumas implementacoes ficam aninhadas dentro da propria interface, como `IWorkoutRepository.WorkoutRepository`.
 - Prefira manter nomes e idioma consistentes com o codigo atual: classes e APIs em ingles, textos de UI em portugues quando fizer sentido ao produto.
 - O CRUD da biblioteca global de exercicios fica em `ExercisesScreen`/`ExercisesViewModel`; o `AddExerciseDialog` continua sendo o ponto de adicionar exercicios ao treino dentro de `TrainingScreen`.
+- O fluxo de descanso fica distribuido entre `TrainingScreen`, `TrainingViewModel` e o pacote `resttimer`; ao mexer nele, preserve a regra: app em foreground vibra/atualiza UI, app em background continua notificando.
+- Finalizar treino deve cancelar qualquer descanso ativo para nao reabrir sessao por toque em notificacao atrasada.
+- O cronometro visivel da tela de treino agora ocupa uma faixa separada e full-width no topo; evite voltar a prende-lo apenas ao alinhamento do header/titulo.
 
 ## Room e migracoes
 
@@ -79,6 +83,8 @@ Executar a partir da raiz do repositorio:
 - `app/build.gradle.kts` calcula `versionName` com `git describe --tags --abbrev=0`. Em ambiente sem tag Git, o build pode falhar.
 - O `README.md` e o `CLAUDE.md` sao uteis como contexto, mas valide sempre no codigo quando houver divergencia.
 - Ha detalhes de dominio recentes relacionados a `WeightUnit`; ao tocar em exercicios, logs ou UI de treino, confira impacto em mappers, banco e testes.
+- O timer de descanso nao usa Room; o estado ativo e a ultima duracao ficam em `SharedPreferences` via `RestTimerStorage`, entao mudancas nele nao pedem migracao de banco.
+- O alerta de descanso depende de `POST_NOTIFICATIONS` e pode usar `SCHEDULE_EXACT_ALARM`; qualquer ajuste nesse fluxo precisa ser validado tanto com o app aberto quanto em background.
 
 ## Ao adicionar funcionalidade
 
@@ -93,4 +99,5 @@ Executar a partir da raiz do repositorio:
 
 - Comece por `README.md`, `CLAUDE.md`, `app/build.gradle.kts` e `app/src/main/java/com/daniloscataloni/liftking/di/Koin.kt`.
 - Para fluxos de treino, a entrada principal costuma passar por `TrainingViewModel`.
+- Para descanso/alertas, confira `TrainingScreen`, `TrainingViewModel`, `RestTimerManager`, `RestTimerReceiver` e `RestNotificationManager` em conjunto.
 - Para listas e navegacao principal, confira `PeriodizationScreen`, `WorkoutListScreen`, `TrainingScreen`, `ExercisesScreen` e `LiftKingNavHost`.

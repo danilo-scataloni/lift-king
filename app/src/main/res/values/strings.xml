@@ -51,6 +51,10 @@
     <string name="dialog_set_edit_title">Editar Série %1$d</string>
     <string name="dialog_set_delete_title">Excluir série?</string>
     <string name="dialog_set_delete_message">Essa ação não pode ser desfeita.</string>
+    <string name="dialog_rest_exact_alarm_title">Ativar alerta preciso?</string>
+    <string name="dialog_rest_exact_alarm_message">Para ser avisado no segundo certo mesmo fora do app, libere alarmes e lembretes para o Lift King. Sem isso, o alerta pode atrasar.</string>
+    <string name="dialog_rest_notifications_title">Ativar notificações?</string>
+    <string name="dialog_rest_notifications_message">O descanso começou, mas sem notificações o aviso só aparece dentro do app. Para receber alerta em segundo plano, libere as notificações do Lift King.</string>
 
     <string name="dialog_exercise_remove_title">Remover exercício?</string>
     <string name="dialog_exercise_remove_message">O exercício \"%1$s\" será removido deste treino.</string>
@@ -87,8 +91,14 @@
     <string name="button_delete">Excluir</string>
     <string name="button_clear_filter">Limpar filtro</string>
     <string name="button_add_set">Adicionar série</string>
+    <string name="button_save_set">Salvar série</string>
+    <string name="button_save_and_rest">Salvar + descansar</string>
     <string name="button_delete_set">Excluir série</string>
     <string name="button_create_exercise">Criar novo exercício</string>
+    <string name="button_start_rest">Iniciar descanso</string>
+    <string name="button_add_thirty_seconds">+30s</string>
+    <string name="button_open_settings">Abrir ajustes</string>
+    <string name="button_keep_current">Continuar assim</string>
     <string name="content_desc_remove_exercise">Remover exercício</string>
 
     <!-- ==================== LABELS ==================== -->
@@ -104,11 +114,14 @@
     <string name="label_reps">Reps</string>
     <string name="label_rir">RIR</string>
     <string name="label_failure">Falha</string>
+    <string name="label_rest_custom_seconds">Tempo personalizado (segundos)</string>
+    <string name="label_rest_precision_limited">O alerta em segundo plano pode atrasar até você liberar alarmes exatos.</string>
 
     <!-- ==================== PLACEHOLDERS ==================== -->
 
     <string name="placeholder_exercise_name">Digite o nome do exercício</string>
     <string name="label_none">Nenhum</string>
+    <string name="placeholder_rest_seconds">Ex: 75</string>
 
     <!-- ==================== TABELA ==================== -->
 
@@ -143,6 +156,7 @@
     <string name="content_desc_view_details">Ver detalhes</string>
     <string name="content_desc_edit_exercise">Editar exercício</string>
     <string name="content_desc_delete_exercise">Excluir exercício</string>
+    <string name="content_desc_cancel_rest">Cancelar descanso</string>
 
     <!-- ==================== NAVEGAÇÃO ==================== -->
 
@@ -152,4 +166,23 @@
     <!-- ==================== ERROS ==================== -->
 
     <string name="error_unknown_exercise">Exercício desconhecido</string>
+    <string name="error_rest_invalid_seconds">Digite um tempo válido em segundos.</string>
+
+    <!-- ==================== DESCANSO ==================== -->
+
+    <string name="sheet_rest_title">Descanso</string>
+    <string name="sheet_rest_subtitle">Quanto tempo você quer descansar após %1$s?</string>
+    <string name="card_rest_title">Descanso em andamento</string>
+    <string name="card_rest_finished">Hora de voltar</string>
+
+    <!-- ==================== NOTIFICAÇÕES ==================== -->
+
+    <string name="notification_rest_channel_name">Alertas de descanso</string>
+    <string name="notification_rest_channel_description">Notificações para avisar quando o descanso terminar.</string>
+    <string name="notification_rest_ongoing_channel_name">Cronômetro de descanso</string>
+    <string name="notification_rest_ongoing_channel_description">Mostra o descanso em andamento com cronômetro.</string>
+    <string name="notification_rest_ongoing_title">Descanso em andamento</string>
+    <string name="notification_rest_title">Descanso finalizado</string>
+    <string name="notification_rest_message">%1$s está pronto no treino %2$s.</string>
+    <string name="notification_rest_message_no_workout">%1$s está pronto para a próxima série.</string>
 </resources>

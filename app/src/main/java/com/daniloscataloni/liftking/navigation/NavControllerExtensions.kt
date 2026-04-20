@@ -7,8 +7,10 @@ fun NavController.navigateToWorkouts(periodizationId: Long) {
     navigate(Route.Workouts(periodizationId))
 }
 
-fun NavController.navigateToTraining(workoutId: Long) {
-    navigate(Route.Training(workoutId))
+fun NavController.navigateToTraining(workoutId: Long, launchSingleTop: Boolean = false) {
+    navigate(Route.Training(workoutId)) {
+        this.launchSingleTop = launchSingleTop
+    }
 }
 
 fun NavController.popBackStackSafely(): Boolean {

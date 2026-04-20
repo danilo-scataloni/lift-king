@@ -6,6 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun LiftKingButton(
@@ -39,8 +41,10 @@ fun LiftKingButton(
         onClick = onClick
     ) {
         Text(
+            modifier = Modifier.fillMaxWidth(),
             text = text,
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center
         )
     }
 }

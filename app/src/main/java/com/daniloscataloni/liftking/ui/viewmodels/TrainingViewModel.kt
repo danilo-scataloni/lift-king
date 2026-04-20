@@ -2,20 +2,25 @@ package com.daniloscataloni.liftking.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daniloscataloni.liftking.domain.models.Exercise
-import com.daniloscataloni.liftking.domain.models.MuscleGroup
-import com.daniloscataloni.liftking.domain.models.SetLog
-import com.daniloscataloni.liftking.domain.models.WeightUnit
-import com.daniloscataloni.liftking.domain.models.WorkoutExercise
 import com.daniloscataloni.liftking.data.repositories.IExerciseRepository
 import com.daniloscataloni.liftking.data.repositories.ITrainingRepository
 import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
+import com.daniloscataloni.liftking.domain.models.Exercise
+import com.daniloscataloni.liftking.domain.models.MuscleGroup
+import com.daniloscataloni.liftking.domain.models.RestTimer
+import com.daniloscataloni.liftking.domain.models.SetLog
+import com.daniloscataloni.liftking.domain.models.WeightUnit
+import com.daniloscataloni.liftking.domain.models.WorkoutExercise
+import com.daniloscataloni.liftking.resttimer.AppVisibilityTracker
+import com.daniloscataloni.liftking.resttimer.IRestTimerManager
+import com.daniloscataloni.liftking.resttimer.RestTimerScheduleMode
+import com.daniloscataloni.liftking.resttimer.RestTimerStorage
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class ExerciseWithSets(
@@ -23,6 +28,14 @@ data class ExerciseWithSets(
     val exercise: Exercise,
     val lastSets: List<SetLog>,
     val currentSets: List<SetLog>
+)
+
+data class ActiveRestTimerUiState(
+    val exerciseId: Int,
+    val exerciseName: String,
+    val durationSeconds: Int,
+    val remainingSeconds: Int,
+    val endAtEpochMillis: Long
 )
 
 data class TrainingUiState(
@@ -46,12 +59,18 @@ data class TrainingUiState(
     val editExercisePrimaryMuscle: MuscleGroup = MuscleGroup.CHEST,
     val editExerciseSecondaryMuscle: MuscleGroup? = null,
     val editExerciseWeightUnit: WeightUnit = WeightUnit.KG,
+    val activeRestTimer: ActiveRestTimerUiState? = null,
+    val lastRestDurationSeconds: Int = RestTimerStorage.DEFAULT_REST_DURATION_SECONDS,
+    val showExactAlarmPermissionPrompt: Boolean = false,
+    val restCompletionSignal: Int = 0
 )
 
 class TrainingViewModel(
     private val workoutRepository: IWorkoutRepository,
     private val trainingRepository: ITrainingRepository,
-    private val exerciseRepository: IExerciseRepository
+    private val exerciseRepository: IExerciseRepository,
+    private val restTimerManager: IRestTimerManager,
+    private val appVisibilityTracker: AppVisibilityTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TrainingUiState())
@@ -59,17 +78,19 @@ class TrainingViewModel(
 
     private var workoutId: Long = 0
     private var reorderJob: Job? = null
+    private var restTimerJob: Job? = null
 
     fun loadWorkout(workoutId: Long) {
         this.workoutId = workoutId
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            val currentState = _uiState.value
+            _uiState.value = currentState.copy(isLoading = true)
 
             val workout = workoutRepository.getWorkoutById(workoutId)
 
             var session = trainingRepository.getInProgressSession(workoutId)
             if (session == null) {
-                val sessionId = trainingRepository.startSession(workoutId)
+                trainingRepository.startSession(workoutId)
                 session = trainingRepository.getInProgressSession(workoutId)
             }
 
@@ -78,21 +99,23 @@ class TrainingViewModel(
 
             val currentExerciseLogs = session?.id?.let { trainingRepository.getExerciseLogs(it) } ?: emptyList()
 
-            val exercisesWithSets = workoutExercises.map { we ->
-                val exercise = allExercises.find { it.id == we.exerciseId }
-                    ?: Exercise(id = we.exerciseId, description = "Exercício desconhecido",
+            val exercisesWithSets = workoutExercises.map { workoutExercise ->
+                val exercise = allExercises.find { it.id == workoutExercise.exerciseId }
+                    ?: Exercise(
+                        id = workoutExercise.exerciseId,
+                        description = "Exercício desconhecido",
                         primaryMuscleGroup = MuscleGroup.CHEST,
-                        secondaryMuscleGroups = null)
+                        secondaryMuscleGroups = null
+                    )
 
-                val lastSets = trainingRepository.getLastSetsForExercise(we.exerciseId, workoutId)
-
-                val currentExerciseLog = currentExerciseLogs.find { it.exerciseId == we.exerciseId }
+                val lastSets = trainingRepository.getLastSetsForExercise(workoutExercise.exerciseId, workoutId)
+                val currentExerciseLog = currentExerciseLogs.find { it.exerciseId == workoutExercise.exerciseId }
                 val currentSets = currentExerciseLog?.let {
                     trainingRepository.getSetsForExerciseLog(it.id)
                 } ?: emptyList()
 
                 ExerciseWithSets(
-                    workoutExercise = we,
+                    workoutExercise = workoutExercise,
                     exercise = exercise,
                     lastSets = lastSets,
                     currentSets = currentSets
@@ -100,16 +123,27 @@ class TrainingViewModel(
             }
 
             val exerciseIdsInWorkout = workoutExercises.map { it.exerciseId }.toSet()
-            val available = allExercises.filter { it.id !in exerciseIdsInWorkout }
+            val availableExercises = allExercises.filter { it.id !in exerciseIdsInWorkout }
+            val activeRestTimer = restTimerManager.getActiveTimer()
+                ?.takeIf { it.workoutId == workoutId }
+                ?.toUiState()
 
-            _uiState.value = TrainingUiState(
+            _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 workoutName = workout?.name ?: "",
                 exercises = exercisesWithSets,
                 sessionId = session?.id,
-                availableExercises = available,
-                showAddExerciseDialog = false
+                availableExercises = availableExercises,
+                showAddExerciseDialog = false,
+                activeRestTimer = activeRestTimer,
+                lastRestDurationSeconds = restTimerManager.getLastUsedDurationSeconds()
             )
+
+            if (activeRestTimer != null) {
+                startRestTimerCountdown(activeRestTimer)
+            } else {
+                restTimerJob?.cancel()
+            }
         }
     }
 
@@ -202,13 +236,9 @@ class TrainingViewModel(
             val sessionId = _uiState.value.sessionId ?: return@launch
 
             val exerciseLogs = trainingRepository.getExerciseLogs(sessionId)
-            var exerciseLog = exerciseLogs.find { it.exerciseId == exerciseId }
+            val exerciseLog = exerciseLogs.find { it.exerciseId == exerciseId }
 
-            val exerciseLogId = if (exerciseLog == null) {
-                trainingRepository.createExerciseLog(sessionId, exerciseId)
-            } else {
-                exerciseLog.id
-            }
+            val exerciseLogId = exerciseLog?.id ?: trainingRepository.createExerciseLog(sessionId, exerciseId)
 
             val currentSets = trainingRepository.getSetsForExerciseLog(exerciseLogId)
             val setNumber = currentSets.size + 1
@@ -227,11 +257,64 @@ class TrainingViewModel(
         }
     }
 
+    fun startRestTimer(exerciseId: Int, exerciseName: String, durationSeconds: Int) {
+        if (durationSeconds <= 0 || workoutId <= 0L) return
+
+        val now = System.currentTimeMillis()
+        val restTimer = RestTimer(
+            workoutId = workoutId,
+            exerciseId = exerciseId,
+            exerciseName = exerciseName,
+            workoutName = _uiState.value.workoutName,
+            durationSeconds = durationSeconds,
+            startAtEpochMillis = now,
+            endAtEpochMillis = now + durationSeconds * 1000L
+        )
+
+        val result = restTimerManager.scheduleRestTimer(restTimer)
+        val activeRestTimer = result.timer.toUiState()
+
+        _uiState.value = _uiState.value.copy(
+            activeRestTimer = activeRestTimer,
+            lastRestDurationSeconds = durationSeconds,
+            showExactAlarmPermissionPrompt = result.scheduleMode == RestTimerScheduleMode.INEXACT
+        )
+
+        startRestTimerCountdown(activeRestTimer)
+    }
+
+    fun cancelRestTimer() {
+        restTimerJob?.cancel()
+        restTimerManager.cancelActiveTimer()
+        _uiState.value = _uiState.value.copy(
+            activeRestTimer = null,
+            showExactAlarmPermissionPrompt = false
+        )
+    }
+
+    fun extendRestTimer(additionalSeconds: Int = 30) {
+        val activeRestTimer = _uiState.value.activeRestTimer ?: return
+        startRestTimer(
+            exerciseId = activeRestTimer.exerciseId,
+            exerciseName = activeRestTimer.exerciseName,
+            durationSeconds = activeRestTimer.remainingSeconds + additionalSeconds
+        )
+    }
+
+    fun dismissExactAlarmPermissionPrompt() {
+        _uiState.value = _uiState.value.copy(showExactAlarmPermissionPrompt = false)
+    }
+
+    fun consumeRestCompletionSignal() {
+        _uiState.value = _uiState.value.copy(restCompletionSignal = 0)
+    }
+
     fun completeSession() {
         viewModelScope.launch {
-            _uiState.value.sessionId?.let { sessionId ->
-                trainingRepository.completeSession(sessionId)
-            }
+            val sessionId = _uiState.value.sessionId ?: return@launch
+            cancelRestTimer()
+            trainingRepository.completeSession(sessionId)
+            _uiState.value = _uiState.value.copy(sessionId = null)
         }
     }
 
@@ -312,6 +395,7 @@ class TrainingViewModel(
         val exercise = _uiState.value.exerciseToEdit ?: return
         val name = _uiState.value.editExerciseName.trim()
         if (name.isBlank()) return
+
         viewModelScope.launch {
             exerciseRepository.updateExercise(
                 exercise.copy(
@@ -334,7 +418,7 @@ class TrainingViewModel(
                 val updated = exerciseRepository.getAllExercises().first()
                     .filter { it.id !in exerciseIdsInWorkout }
                 _uiState.value = _uiState.value.copy(availableExercises = updated)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.value = _uiState.value.copy(deleteExerciseError = true)
             }
         }
@@ -377,5 +461,75 @@ class TrainingViewModel(
 
     internal fun seedExercisesForTest(exercises: List<ExerciseWithSets>) {
         _uiState.value = _uiState.value.copy(exercises = exercises, isLoading = false)
+    }
+
+    private fun startRestTimerCountdown(activeRestTimer: ActiveRestTimerUiState) {
+        restTimerJob?.cancel()
+        restTimerJob = viewModelScope.launch {
+            while (true) {
+                val storedTimer = restTimerManager.getActiveTimer()
+                if (storedTimer == null || !storedTimer.matches(activeRestTimer)) {
+                    clearLocalRestTimerState()
+                    break
+                }
+
+                val remainingSeconds = calculateRemainingSeconds(activeRestTimer.endAtEpochMillis)
+                _uiState.value = _uiState.value.copy(
+                    activeRestTimer = activeRestTimer.copy(remainingSeconds = remainingSeconds)
+                )
+
+                if (remainingSeconds <= 0 && appVisibilityTracker.isAppInForeground) {
+                    finishRestTimerInApp()
+                    break
+                }
+
+                delay(1000)
+            }
+        }
+    }
+
+    private fun finishRestTimerInApp() {
+        restTimerJob?.cancel()
+        restTimerManager.cancelActiveTimer()
+        _uiState.value = _uiState.value.copy(
+            activeRestTimer = null,
+            showExactAlarmPermissionPrompt = false,
+            restCompletionSignal = _uiState.value.restCompletionSignal + 1
+        )
+    }
+
+    private fun clearLocalRestTimerState() {
+        restTimerJob?.cancel()
+        _uiState.value = _uiState.value.copy(
+            activeRestTimer = null,
+            showExactAlarmPermissionPrompt = false
+        )
+    }
+
+    private fun calculateRemainingSeconds(endAtEpochMillis: Long): Int {
+        val remainingMillis = (endAtEpochMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+        return ((remainingMillis + 999L) / 1000L).toInt()
+    }
+
+    private fun RestTimer.toUiState(): ActiveRestTimerUiState {
+        return ActiveRestTimerUiState(
+            exerciseId = exerciseId,
+            exerciseName = exerciseName,
+            durationSeconds = durationSeconds,
+            remainingSeconds = calculateRemainingSeconds(endAtEpochMillis),
+            endAtEpochMillis = endAtEpochMillis
+        )
+    }
+
+    private fun RestTimer.matches(activeRestTimer: ActiveRestTimerUiState): Boolean {
+        return workoutId == this@TrainingViewModel.workoutId &&
+            exerciseId == activeRestTimer.exerciseId &&
+            endAtEpochMillis == activeRestTimer.endAtEpochMillis
+    }
+
+    override fun onCleared() {
+        reorderJob?.cancel()
+        restTimerJob?.cancel()
+        super.onCleared()
     }
 }

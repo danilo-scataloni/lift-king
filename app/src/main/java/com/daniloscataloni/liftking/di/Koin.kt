@@ -10,6 +10,9 @@ import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository
 import com.daniloscataloni.liftking.data.repositories.PeriodizationRepository
 import com.daniloscataloni.liftking.data.repositories.TrainingRepository
 import com.daniloscataloni.liftking.data.repositories.IWorkoutRepository.WorkoutRepository
+import com.daniloscataloni.liftking.resttimer.AppVisibilityTracker
+import com.daniloscataloni.liftking.resttimer.IRestTimerManager
+import com.daniloscataloni.liftking.resttimer.RestTimerManager
 import com.daniloscataloni.liftking.ui.viewmodels.PeriodizationViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.ExercisesViewModel
 import com.daniloscataloni.liftking.ui.viewmodels.TrainingViewModel
@@ -33,6 +36,8 @@ val appModule = module {
     singleOf(::PeriodizationRepository) { bind<IPeriodizationRepository>() }
     singleOf(::WorkoutRepository) { bind<IWorkoutRepository>() }
     singleOf(::TrainingRepository) { bind<ITrainingRepository>() }
+    singleOf(::AppVisibilityTracker)
+    singleOf(::RestTimerManager) { bind<IRestTimerManager>() }
 
     // ========== DAOs ==========
     single { get<LiftKingDatabase>().exerciseDao() }
