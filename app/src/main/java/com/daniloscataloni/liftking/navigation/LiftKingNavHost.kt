@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -94,6 +95,7 @@ fun LiftKingNavHost(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TopLevelDestination.entries.forEach { destination ->
+                        val itemShape = RoundedCornerShape(22.dp)
                         val isSelected = selectedTopLevelDestination == destination
                         val contentColor = if (isSelected) {
                             MaterialTheme.colorScheme.onBackground
@@ -103,16 +105,18 @@ fun LiftKingNavHost(
 
                         Surface(
                             color = if (isSelected) DeepBlack else BackgroundGray,
-                            shape = RoundedCornerShape(22.dp),
-                            modifier = Modifier.clickable {
-                                navController.navigate(destination.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                            shape = itemShape,
+                            modifier = Modifier
+                                .clip(itemShape)
+                                .clickable {
+                                    navController.navigate(destination.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
-                            }
                         ) {
                             Column(
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
