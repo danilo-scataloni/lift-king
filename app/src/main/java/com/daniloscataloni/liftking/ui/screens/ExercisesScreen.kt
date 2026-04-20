@@ -49,6 +49,7 @@ import com.daniloscataloni.liftking.ui.components.CreateExerciseDialog
 import com.daniloscataloni.liftking.ui.components.DeleteExerciseFromLibraryConfirmDialog
 import com.daniloscataloni.liftking.ui.components.EditExerciseDialog
 import com.daniloscataloni.liftking.ui.components.MediumSpacer
+import com.daniloscataloni.liftking.ui.extensions.toShortLabel
 import com.daniloscataloni.liftking.ui.extensions.toReadableString
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
@@ -427,7 +428,7 @@ private fun RowScope.ExerciseLibraryCardContent(
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
         )
         Text(
-            text = exercise.weightUnit.shortLabel,
+            text = exercise.weightUnit.toShortLabel(),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
         )

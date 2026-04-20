@@ -6,21 +6,11 @@ import org.junit.jupiter.api.Test
 class WeightUnitTest {
 
     @Test
-    fun `KG has correct labels`() {
-        assertEquals("Quilogramas", WeightUnit.KG.displayLabel)
-        assertEquals("kg", WeightUnit.KG.shortLabel)
-    }
-
-    @Test
-    fun `LIBRAS has correct labels`() {
-        assertEquals("Libras", WeightUnit.LIBRAS.displayLabel)
-        assertEquals("lb", WeightUnit.LIBRAS.shortLabel)
-    }
-
-    @Test
-    fun `TIJOLINHOS has correct labels`() {
-        assertEquals("Tijolinhos", WeightUnit.TIJOLINHOS.displayLabel)
-        assertEquals("tij", WeightUnit.TIJOLINHOS.shortLabel)
+    fun `enum keeps supported order stable`() {
+        assertEquals(
+            listOf(WeightUnit.KG, WeightUnit.LIBRAS, WeightUnit.TIJOLINHOS),
+            WeightUnit.entries
+        )
     }
 
     @Test

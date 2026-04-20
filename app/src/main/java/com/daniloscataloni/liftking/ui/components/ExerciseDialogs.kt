@@ -40,6 +40,7 @@ import com.daniloscataloni.liftking.R
 import com.daniloscataloni.liftking.domain.models.MuscleGroup
 import com.daniloscataloni.liftking.domain.models.WeightUnit
 import com.daniloscataloni.liftking.ui.extensions.toReadableString
+import com.daniloscataloni.liftking.ui.extensions.toDisplayLabel
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.theme.SmoothGray
@@ -235,7 +236,7 @@ private fun ExerciseFormContent(
                             )
                         }
                         Text(
-                            text = unit.displayLabel,
+                            text = unit.toDisplayLabel(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

@@ -103,7 +103,7 @@ class TrainingViewModel(
                 val exercise = allExercises.find { it.id == workoutExercise.exerciseId }
                     ?: Exercise(
                         id = workoutExercise.exerciseId,
-                        description = "Exercício desconhecido",
+                        description = "",
                         primaryMuscleGroup = MuscleGroup.CHEST,
                         secondaryMuscleGroups = null
                     )

@@ -130,6 +130,15 @@
     <string name="table_header_reps">Reps</string>
     <string name="table_header_rir">RIR</string>
 
+    <!-- ==================== UNIDADES DE PESO ==================== -->
+
+    <string name="weight_unit_kg_display">Quilogramas</string>
+    <string name="weight_unit_lb_display">Libras</string>
+    <string name="weight_unit_blocks_display">Tijolinhos</string>
+    <string name="weight_unit_kg_short">kg</string>
+    <string name="weight_unit_lb_short">lb</string>
+    <string name="weight_unit_blocks_short">tij</string>
+
     <!-- ==================== GRUPOS MUSCULARES ==================== -->
 
     <string name="muscle_group_chest">Peito</string>
@@ -174,6 +183,8 @@
     <string name="sheet_rest_subtitle">Quanto tempo você quer descansar após %1$s?</string>
     <string name="card_rest_title">Descanso em andamento</string>
     <string name="card_rest_finished">Hora de voltar</string>
+    <string name="format_rest_duration_minutes_seconds">%1$dm %2$02ds</string>
+    <string name="format_rest_duration_seconds">%1$ds</string>
 
     <!-- ==================== NOTIFICAÇÕES ==================== -->
 

@@ -99,7 +99,9 @@ import com.daniloscataloni.liftking.ui.components.MediumSpacer
 import com.daniloscataloni.liftking.ui.components.NavigationBackButton
 import com.daniloscataloni.liftking.ui.components.SmallSpacer
 import com.daniloscataloni.liftking.ui.components.SwipeToRevealEditBox
+import com.daniloscataloni.liftking.ui.extensions.toDisplayName
 import com.daniloscataloni.liftking.ui.extensions.toReadableString
+import com.daniloscataloni.liftking.ui.extensions.toShortLabel
 import com.daniloscataloni.liftking.ui.theme.BackgroundGray
 import com.daniloscataloni.liftking.ui.theme.BorderGray
 import com.daniloscataloni.liftking.ui.theme.SmoothGray
@@ -263,8 +265,9 @@ fun TrainingScreen(
         }
 
         showAddSetDialog?.let { exerciseWithSets ->
+            val exerciseName = exerciseWithSets.exercise.toDisplayName()
             AddSetDialog(
-                exerciseName = exerciseWithSets.exercise.description,
+                exerciseName = exerciseName,
                 weightUnit = exerciseWithSets.exercise.weightUnit,
                 onDismiss = { showAddSetDialog = null },
                 onSave = { weight, reps, rir ->
@@ -286,7 +289,7 @@ fun TrainingScreen(
                     showAddSetDialog = null
                     restPromptTarget = RestPromptTarget(
                         exerciseId = exerciseWithSets.exercise.id,
-                        exerciseName = exerciseWithSets.exercise.description
+                        exerciseName = exerciseName
                     )
                 }
             )
@@ -607,10 +610,11 @@ private fun ExerciseCard(
     modifier: Modifier = Modifier,
 ) {
     var showRemoveConfirmDialog by remember { mutableStateOf(false) }
+    val exerciseName = exerciseWithSets.exercise.toDisplayName()
 
     if (showRemoveConfirmDialog) {
         RemoveExerciseConfirmDialog(
-            exerciseName = exerciseWithSets.exercise.description,
+            exerciseName = exerciseName,
             onDismiss = { showRemoveConfirmDialog = false },
             onConfirm = {
                 showRemoveConfirmDialog = false
@@ -637,7 +641,7 @@ private fun ExerciseCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = exerciseWithSets.exercise.description,
+                        text = exerciseName,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -754,7 +758,7 @@ private fun SetTableHeader(weightUnit: WeightUnit) {
             modifier = Modifier.width(50.dp)
         )
         Text(
-            text = "${stringResource(R.string.table_header_weight)} (${weightUnit.shortLabel})",
+            text = "${stringResource(R.string.table_header_weight)} (${weightUnit.toShortLabel()})",
             style = MaterialTheme.typography.labelSmall,
             color = SmoothGray,
             modifier = Modifier.width(60.dp),
@@ -812,7 +816,7 @@ private fun SetRow(
             modifier = Modifier.width(50.dp)
         )
         Text(
-            text = "${set.weight} ${weightUnit.shortLabel}",
+            text = "${set.weight} ${weightUnit.toShortLabel()}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isCurrentSession) FontWeight.SemiBold else FontWeight.Normal,
             color = textColor,
@@ -888,7 +892,9 @@ private fun AddSetDialog(
                     OutlinedTextField(
                         value = weight,
                         onValueChange = { weight = it },
-                        label = { Text("${stringResource(R.string.label_weight)} (${weightUnit.shortLabel})") },
+                        label = {
+                            Text("${stringResource(R.string.label_weight)} (${weightUnit.toShortLabel()})")
+                        },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier.weight(1f),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -1123,7 +1129,9 @@ private fun EditSetDialog(
                         OutlinedTextField(
                             value = weight,
                             onValueChange = { weight = it },
-                            label = { Text("${stringResource(R.string.label_weight)} (${weightUnit.shortLabel})") },
+                            label = {
+                                Text("${stringResource(R.string.label_weight)} (${weightUnit.toShortLabel()})")
+                            },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -1384,7 +1392,7 @@ private fun AddExerciseDialog(
                                         modifier = Modifier.padding(12.dp)
                                     ) {
                                         Text(
-                                            text = exercise.description,
+                                            text = exercise.toDisplayName(),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
@@ -1392,7 +1400,7 @@ private fun AddExerciseDialog(
                                             text = buildString {
                                                 append(exercise.primaryMuscleGroup.toReadableString())
                                                 append(" · ")
-                                                append(exercise.weightUnit.shortLabel)
+                                                append(exercise.weightUnit.toShortLabel())
                                             },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = SmoothGray
@@ -1451,12 +1459,13 @@ private fun RemoveExerciseConfirmDialog(
     }
 }
 
+@Composable
 private fun formatRestDuration(durationSeconds: Int): String {
     val minutes = durationSeconds / 60
     val seconds = durationSeconds % 60
     return if (minutes > 0) {
-        "${minutes}m ${seconds.toString().padStart(2, '0')}s"
+        stringResource(R.string.format_rest_duration_minutes_seconds, minutes, seconds)
     } else {
-        "${seconds}s"
+        stringResource(R.string.format_rest_duration_seconds, seconds)
     }
 }
