@@ -45,7 +45,10 @@ class RestNotificationManager(
         }
     }
 
-    fun showOngoingRestTimerNotification(restTimer: com.daniloscataloni.liftking.domain.models.RestTimer) {
+    fun showOngoingRestTimerNotification(
+        restTimer: com.daniloscataloni.liftking.domain.models.RestTimer,
+        scheduleMode: RestTimerScheduleMode
+    ) {
         if (!canPostNotifications()) return
 
         val contentText = if (restTimer.workoutName.isBlank()) {
@@ -54,7 +57,7 @@ class RestNotificationManager(
             "${restTimer.exerciseName} · ${restTimer.workoutName}"
         }
 
-        val notification = NotificationCompat.Builder(context, REST_ONGOING_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, REST_ONGOING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_rest_notification)
             .setContentTitle(context.getString(R.string.notification_rest_ongoing_title))
             .setContentText(contentText)
@@ -64,10 +67,17 @@ class RestNotificationManager(
             .setSilent(true)
             .setShowWhen(true)
             .setWhen(restTimer.endAtEpochMillis)
-            // Let the receiver dismiss the notification so inexact alarms do not make it vanish early.
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
-            .build()
+
+        if (scheduleMode == RestTimerScheduleMode.EXACT) {
+            notificationBuilder
+                // Let the receiver dismiss the notification when the alarm is expected to fire on time.
+                .setUsesChronometer(true)
+                .setChronometerCountDown(true)
+        } else {
+            notificationBuilder.setSubText(context.getString(R.string.notification_rest_ongoing_limited_precision))
+        }
+
+        val notification = notificationBuilder.build()
 
         NotificationManagerCompat.from(context).notify(REST_ONGOING_NOTIFICATION_ID, notification)
     }

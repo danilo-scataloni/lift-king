@@ -46,25 +46,30 @@ class RestTimerManager(
     override fun scheduleRestTimer(restTimer: RestTimer): RestTimerScheduleResult {
         cancelScheduledAlarmOnly()
 
-        storage.saveActiveTimer(restTimer)
-        storage.saveLastUsedDurationSeconds(restTimer.durationSeconds)
-
+        val canScheduleExactAlarms = canScheduleExactAlarms()
+        val scheduleMode = if (canScheduleExactAlarms) {
+            RestTimerScheduleMode.EXACT
+        } else {
+            RestTimerScheduleMode.INEXACT
+        }
         val pendingIntent = RestTimerReceiver.createPendingIntent(context, restTimer)
-        val scheduleMode = if (canScheduleExactAlarms()) {
+
+        if (scheduleMode == RestTimerScheduleMode.EXACT) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 restTimer.endAtEpochMillis,
                 pendingIntent
             )
-            RestTimerScheduleMode.EXACT
         } else {
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 restTimer.endAtEpochMillis,
                 pendingIntent
             )
-            RestTimerScheduleMode.INEXACT
         }
+
+        storage.saveActiveTimer(restTimer, scheduleMode)
+        storage.saveLastUsedDurationSeconds(restTimer.durationSeconds)
 
         syncOngoingNotification()
 
@@ -93,9 +98,17 @@ class RestTimerManager(
     private fun syncOngoingNotification() {
         val activeTimer = getActiveTimer()
         if (activeTimer != null && !appVisibilityTracker.isAppInForeground) {
-            notificationManager.showOngoingRestTimerNotification(activeTimer)
+            notificationManager.showOngoingRestTimerNotification(
+                restTimer = activeTimer,
+                scheduleMode = storage.getActiveTimerScheduleMode() ?: if (canScheduleExactAlarms()) {
+                    RestTimerScheduleMode.EXACT
+                } else {
+                    RestTimerScheduleMode.INEXACT
+                }
+            )
         } else {
             notificationManager.cancelOngoingRestTimerNotification()
         }
     }
+
 }

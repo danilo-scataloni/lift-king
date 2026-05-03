@@ -1,14 +1,14 @@
 package com.daniloscataloni.liftking.resttimer
 
 import android.content.Context
-import com.daniloscataloni.liftking.domain.models.RestTimer
 import androidx.core.content.edit
+import com.daniloscataloni.liftking.domain.models.RestTimer
 
 class RestTimerStorage(context: Context) {
 
     private val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
-    fun saveActiveTimer(restTimer: RestTimer) {
+    fun saveActiveTimer(restTimer: RestTimer, scheduleMode: RestTimerScheduleMode) {
         preferences.edit {
             putLong(KEY_WORKOUT_ID, restTimer.workoutId)
                 .putInt(KEY_EXERCISE_ID, restTimer.exerciseId)
@@ -17,6 +17,7 @@ class RestTimerStorage(context: Context) {
                 .putInt(KEY_DURATION_SECONDS, restTimer.durationSeconds)
                 .putLong(KEY_START_AT, restTimer.startAtEpochMillis)
                 .putLong(KEY_END_AT, restTimer.endAtEpochMillis)
+                .putString(KEY_SCHEDULE_MODE, scheduleMode.name)
         }
     }
 
@@ -49,7 +50,13 @@ class RestTimerStorage(context: Context) {
                 .remove(KEY_DURATION_SECONDS)
                 .remove(KEY_START_AT)
                 .remove(KEY_END_AT)
+                .remove(KEY_SCHEDULE_MODE)
         }
+    }
+
+    fun getActiveTimerScheduleMode(): RestTimerScheduleMode? {
+        val scheduleModeName = preferences.getString(KEY_SCHEDULE_MODE, null) ?: return null
+        return RestTimerScheduleMode.entries.firstOrNull { it.name == scheduleModeName }
     }
 
     fun saveLastUsedDurationSeconds(durationSeconds: Int) {
@@ -73,6 +80,7 @@ class RestTimerStorage(context: Context) {
         private const val KEY_DURATION_SECONDS = "duration_seconds"
         private const val KEY_START_AT = "start_at"
         private const val KEY_END_AT = "end_at"
+        private const val KEY_SCHEDULE_MODE = "schedule_mode"
         private const val KEY_LAST_USED_DURATION_SECONDS = "last_used_duration_seconds"
     }
 }

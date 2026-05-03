@@ -193,6 +193,7 @@
     <string name="notification_rest_ongoing_channel_name">Cronômetro de descanso</string>
     <string name="notification_rest_ongoing_channel_description">Mostra o descanso em andamento com cronômetro.</string>
     <string name="notification_rest_ongoing_title">Descanso em andamento</string>
+    <string name="notification_rest_ongoing_limited_precision">O alerta pode atrasar sem alarmes exatos.</string>
     <string name="notification_rest_title">Descanso finalizado</string>
     <string name="notification_rest_message">%1$s está pronto no treino %2$s.</string>
     <string name="notification_rest_message_no_workout">%1$s está pronto para a próxima série.</string>

@@ -192,6 +192,7 @@
     <string name="notification_rest_ongoing_channel_name">Rest timer</string>
     <string name="notification_rest_ongoing_channel_description">Shows the ongoing rest with a timer.</string>
     <string name="notification_rest_ongoing_title">Rest in progress</string>
+    <string name="notification_rest_ongoing_limited_precision">The alert may be delayed without exact alarms.</string>
     <string name="notification_rest_title">Rest finished</string>
     <string name="notification_rest_message">%1$s is ready in workout %2$s.</string>
     <string name="notification_rest_message_no_workout">%1$s is ready for the next set.</string>
